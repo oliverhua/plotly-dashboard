@@ -29,7 +29,8 @@ export const fetchFolderStructure = async (): Promise<FolderStructure> => {
  */
 export const fetchHeatmapData = async (folder: string, filename: string): Promise<HeatmapData | null> => {
   try {
-    const response = await fetch(`/data/${folder}/${filename}`);
+    // 使用相對路徑，確保在 GitHub Pages 上也能正確訪問
+    const response = await fetch(`./data/${folder}/${filename}`);
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }

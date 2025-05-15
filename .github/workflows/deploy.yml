@@ -27,6 +27,11 @@ jobs:
       - name: Build
         run: yarn build
 
+      - name: Copy data files
+        run: |
+          mkdir -p dist/data
+          cp -r public/data/* dist/data/
+
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
