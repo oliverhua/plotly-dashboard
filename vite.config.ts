@@ -4,6 +4,7 @@ import { defineConfig } from 'vite';
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/plotly-dashboard/',
   plugins: [react(), tailwindcss()],
   publicDir: 'public',
   build: {

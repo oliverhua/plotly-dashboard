@@ -49,3 +49,5 @@ Thumbs.db
 .env.production.local 
 
 public/data/
+
+src/utils/folderStructure.ts
