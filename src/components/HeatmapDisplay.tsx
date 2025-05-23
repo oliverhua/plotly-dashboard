@@ -1,8 +1,15 @@
-import React, { useContext, useEffect, useState, useMemo } from "react";
+import React, { useContext, useMemo, useRef } from "react";
 import Plot from "react-plotly.js";
 import type { HeatmapData } from "../utils/dataUtils";
 import type { Layout, Config } from "plotly.js";
-import { AnimationContext } from "./Sidebar";
+import { AnimationContext } from "../contexts/AnimationContext";
+import { 
+  PLOT_HEIGHT, 
+  PLOT_CONFIG, 
+  PLOT_MARGINS, 
+  JSON_EXTENSION,
+  TRANSITION_DURATION 
+} from "../constants";
 
 interface HeatmapDisplayProps {
     data: HeatmapData | null;
@@ -12,7 +19,7 @@ interface HeatmapDisplayProps {
 }
 
 // 提取狀態顯示組件以減少重複代碼
-const StatusDisplay = ({
+const StatusDisplay = React.memo(({
     icon,
     title,
     message,
@@ -38,195 +45,205 @@ const StatusDisplay = ({
             <div className="text-gray-600">{message}</div>
         </div>
     </div>
-);
+));
 
-const HeatmapDisplay: React.FC<HeatmapDisplayProps> = ({
+StatusDisplay.displayName = 'StatusDisplay';
+
+// Loading indicator
+const LoadingIndicator = React.memo(() => (
+    <StatusDisplay
+        icon={
+            <div className="w-12 h-12 rounded-full border-4 border-blue-500 border-t-transparent animate-spin"></div>
+        }
+        title="Loading Data"
+        message="Please wait while we fetch the heatmap data..."
+        bgColor="bg-transparent"
+        textColor="text-blue-500"
+    />
+));
+
+LoadingIndicator.displayName = 'LoadingIndicator';
+
+// Error display
+const ErrorDisplay = React.memo(({ message }: { message: string }) => (
+    <StatusDisplay
+        icon={
+            <svg
+                className="w-8 h-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
+            </svg>
+        }
+        title="Error Loading Data"
+        message={message}
+        bgColor="bg-red-100"
+        textColor="text-red-600"
+    />
+));
+
+ErrorDisplay.displayName = 'ErrorDisplay';
+
+// Empty state
+const EmptyState = React.memo(() => (
+    <StatusDisplay
+        icon={
+            <svg
+                className="w-8 h-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
+            </svg>
+        }
+        title="No Data Selected"
+        message="Please select a folder and file from the sidebar to view a heatmap."
+        bgColor="bg-blue-100"
+        textColor="text-blue-500"
+    />
+));
+
+EmptyState.displayName = 'EmptyState';
+
+// The main heatmap display component
+const HeatmapDisplay: React.FC<HeatmapDisplayProps> = React.memo(({
     data,
     isLoading,
     error,
     selectedFile,
 }) => {
-    // 1. 首先調用所有 Hook，保持一致的順序
     const { isAnimating } = useContext(AnimationContext);
-    const [displayData, setDisplayData] = useState<HeatmapData | null>(data);
+    const renderCount = useRef(0);
+    
+    // Log render count in development
+    if (import.meta.env.DEV) {
+        renderCount.current++;
+        console.log(`HeatmapDisplay render #${renderCount.current}`, {
+            hasData: !!data,
+            dataSize: data ? `${data.z.length}x${data.z[0]?.length}` : 0,
+            isLoading,
+            error,
+            selectedFile,
+        });
+    }
 
-    // 2. useEffect
-    useEffect(() => {
-        if (data !== displayData) {
-            if (isAnimating) {
-                const timer = setTimeout(() => {
-                    setDisplayData(data);
-                }, 300);
-                return () => clearTimeout(timer);
-            } else {
-                setDisplayData(data);
-            }
+    // Layout configuration
+    const layout: Partial<Layout> = useMemo(() => ({
+        title: {
+            text: selectedFile.replace(JSON_EXTENSION, ""),
+            font: { family: PLOT_CONFIG.FONT_FAMILY, size: PLOT_CONFIG.TITLE_FONT_SIZE },
+        },
+        autosize: true,
+        margin: { 
+          l: PLOT_MARGINS.LEFT, 
+          r: PLOT_MARGINS.RIGHT, 
+          b: PLOT_MARGINS.BOTTOM, 
+          t: PLOT_MARGINS.TOP, 
+          pad: PLOT_MARGINS.PAD 
+        },
+        height: PLOT_HEIGHT,
+        font: {
+            family: PLOT_CONFIG.FONT_FAMILY,
+            size: PLOT_CONFIG.BODY_FONT_SIZE,
+            color: PLOT_CONFIG.FONT_COLOR,
+        },
+    }), [selectedFile]);
+
+    // Plotly configuration
+    const plotConfig: Partial<Config> = useMemo(() => ({
+        responsive: true,
+        displayModeBar: true,
+        modeBarButtonsToRemove: ["lasso2d", "select2d"],
+        displaylogo: false,
+    }), []);
+
+    // Container class name - add blur when loading
+    const containerClassName = useMemo(() => {
+        let className = "w-full h-full p-4 transition-all duration-500 rounded-lg relative ";
+        
+        if (isAnimating || isLoading) {
+            className += "bg-gray-50 opacity-90 ";
+        } else {
+            className += "bg-white ";
         }
-    }, [data, displayData, isAnimating]);
+        
+        return className;
+    }, [isAnimating, isLoading]);
 
-    // 3. 佈局配置 useMemo
-    const layout: Partial<Layout> = useMemo(
-        () => ({
-            title: {
-                text: selectedFile.replace(".json", ""),
-                font: {
-                    family: "system-ui, -apple-system, sans-serif",
-                    size: 18,
-                },
-            },
-            autosize: true,
-            margin: {
-                l: 80,
-                r: 50,
-                b: 80,
-                t: 80,
-                pad: 0,
-            },
-            height: 550,
-            font: {
-                family: "system-ui, -apple-system, sans-serif",
-                size: 12,
-                color: "#333",
-            },
-        }),
-        [selectedFile]
-    );
-
-    // 4. Plotly 配置 useMemo
-    const plotConfig: Partial<Config> = useMemo(
-        () => ({
-            responsive: true,
-            displayModeBar: true,
-            modeBarButtonsToRemove: ["lasso2d", "select2d"],
-            displaylogo: false,
-        }),
-        []
-    );
-
-    // 5. 容器類名 useMemo
-    const containerClassName = useMemo(
-        () =>
-            isAnimating
-                ? "w-full h-full p-4 transition-all duration-500 bg-gray-50 rounded-lg opacity-90 relative"
-                : "w-full h-full p-4 transition-all duration-500 bg-white rounded-lg relative",
-        [isAnimating]
-    );
-
-    // 6. Plotly 數據 useMemo - 必須確保它在每次渲染時都被調用
+    // Heatmap data
     const plotData = useMemo(() => {
-        // 只有在有數據時才生成有效的熱圖數據
-        if (displayData) {
-            return [
-                {
-                    z: displayData.z,
-                    x: displayData.x,
-                    y: displayData.y,
-                    type: "heatmap" as const,
-                    colorscale: "Viridis",
-                    showscale: true,
-                },
-            ];
-        }
-        // 返回空數據作為後備方案
-        return [];
-    }, [displayData]);
+        if (!data) return [];
+        
+        return [{
+            z: data.z,
+            x: data.x,
+            y: data.y,
+            type: "heatmap" as const,
+            colorscale: PLOT_CONFIG.COLORSCALE,
+            showscale: true,
+        }];
+    }, [data]);
 
-    // Plot容器樣式添加過渡效果
-    const plotContainerStyle = useMemo(
-        () => ({
-            width: "100%",
-            height: "100%",
-            transition: "all 500ms ease-in-out",
-            filter: isAnimating ? "blur(6px)" : "blur(0px)",
-            opacity: isAnimating ? 0.6 : 1,
-        }),
-        [isAnimating]
-    );
+    // Plot container style - enhanced animation effects
+    const plotContainerStyle = useMemo(() => ({
+        width: "100%",
+        height: "100%",
+        transition: `all ${TRANSITION_DURATION.MEDIUM}ms cubic-bezier(0.4, 0, 0.2, 1)`,
+        filter: isAnimating || isLoading ? "blur(6px)" : "blur(0px)",
+        opacity: isAnimating || isLoading ? 0.6 : 1,
+        transform: isAnimating ? "scale(0.98)" : "scale(1)",
+    }), [isAnimating, isLoading]);
 
-    // 處理不同狀態
-    if (isLoading) {
-        return (
-            <StatusDisplay
-                icon={
-                    <div className="w-12 h-12 rounded-full border-4 border-blue-500 border-t-transparent animate-spin"></div>
-                }
-                title="Loading Data"
-                message="Please wait while we fetch the heatmap data..."
-                bgColor="bg-transparent"
-                textColor="text-blue-500"
-            />
-        );
+    // Only show error display if error and not loading
+    if (error && !isLoading) {
+        return <ErrorDisplay message={error} />;
     }
 
-    if (error) {
-        return (
-            <StatusDisplay
-                icon={
-                    <svg
-                        className="w-8 h-8"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        ></path>
-                    </svg>
-                }
-                title="Error Loading Data"
-                message={error}
-                bgColor="bg-red-100"
-                textColor="text-red-600"
-            />
-        );
+    // Only show empty state if no data and not loading
+    if (!data && !isLoading) {
+        return <EmptyState />;
     }
 
-    if (!displayData) {
-        return (
-            <StatusDisplay
-                icon={
-                    <svg
-                        className="w-8 h-8"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        ></path>
-                    </svg>
-                }
-                title="No Data Selected"
-                message="Please select a folder and file from the sidebar to view a heatmap."
-                bgColor="bg-blue-100"
-                textColor="text-blue-500"
-            />
-        );
-    }
-
+    // Render the heatmap with blur effect when loading
     return (
         <div className={containerClassName}>
-            {isAnimating && (
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/10 to-transparent z-0 animate-pulse"></div>
+            {/* Enhanced background effect for animation/loading */}
+            {(isAnimating || isLoading) && (
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 to-transparent z-0 animate-pulse"></div>
             )}
-            <div className="relative z-1">
-                <Plot
-                    data={plotData}
-                    layout={layout}
-                    config={plotConfig}
-                    style={plotContainerStyle}
-                />
+            
+            {/* Plot area with animation */}
+            <div className={`relative z-1 transition-all duration-500 ${isAnimating ? 'translate-y-1' : ''}`}>
+                {data ? (
+                    <Plot
+                        data={plotData}
+                        layout={layout}
+                        config={plotConfig}
+                        style={plotContainerStyle}
+                    />
+                ) : isLoading ? (
+                    <div className="w-full bg-gray-50" style={{ height: PLOT_HEIGHT }}></div>
+                ) : null}
             </div>
         </div>
     );
-};
+});
 
-export default React.memo(HeatmapDisplay);
+HeatmapDisplay.displayName = 'HeatmapDisplay';
+
+export default HeatmapDisplay;

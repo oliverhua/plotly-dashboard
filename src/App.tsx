@@ -1,9 +1,20 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import HeatmapDisplay from './components/HeatmapDisplay';
-import Sidebar, { AnimationContext } from './components/Sidebar';
+import Sidebar from './components/Sidebar';
+import ErrorBoundary from './components/ErrorBoundary';
 import { useHeatmapData } from './hooks/useHeatmapData';
+import { AnimationContext } from './contexts/AnimationContext';
+import { ANIMATION_DURATION } from './constants';
+import { formatFolderName, removeFileExtension } from './utils/helpers';
 
 function App() {
+  // URL parameters - decode them to handle any URL encoding
+  const params = useParams<{ folderParam: string, fileParam: string }>();
+  const folderParam = params.folderParam ? decodeURIComponent(params.folderParam) : undefined;
+  const fileParam = params.fileParam ? decodeURIComponent(params.fileParam) : undefined;
+  const navigate = useNavigate();
+  
   const {
     folderStructure,
     selectedFolder,
@@ -13,7 +24,21 @@ function App() {
     error,
     setSelectedFolder,
     setSelectedFile,
-  } = useHeatmapData();
+  } = useHeatmapData(folderParam, fileParam);
+  
+  // Navigate when selections change - but only if they don't match URL
+  useEffect(() => {
+    if (selectedFolder && selectedFile) {
+      const currentPathFolder = folderParam || '';
+      const currentPathFile = fileParam || '';
+      
+      if (selectedFolder !== currentPathFolder || selectedFile !== currentPathFile) {
+        const newPath = `/${encodeURIComponent(selectedFolder)}/${encodeURIComponent(selectedFile)}`;
+        console.log(`Updating URL to match selections: ${newPath}`);
+        navigate(newPath);
+      }
+    }
+  }, [selectedFolder, selectedFile, navigate, folderParam, fileParam]);
   
   // 添加動畫狀態
   const [isAnimating, setIsAnimating] = useState(false);
@@ -28,7 +53,7 @@ function App() {
       
       const timer = setTimeout(() => {
         setTitleClass('');
-      }, 500);
+      }, ANIMATION_DURATION);
       
       return () => clearTimeout(timer);
     }
@@ -93,6 +118,7 @@ function App() {
         </div>
       </header>
 
+      <ErrorBoundary>
       <AnimationContext.Provider value={animationContextValue}>
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar */}
@@ -113,7 +139,7 @@ function App() {
               <div className={titleContainerClassName}>
                 <h2 className={contentTitleClassName}>
                   {selectedFolder && selectedFile 
-                    ? `${selectedFolder.replace('_', ' ')} - ${selectedFile.replace('.json', '')}`
+                      ? `${formatFolderName(selectedFolder)} - ${removeFileExtension(selectedFile)}`
                     : 'Heatmap Visualization'}
                 </h2>
                 <p className="text-sm text-gray-500 mt-1">
@@ -135,6 +161,7 @@ function App() {
           </main>
         </div>
       </AnimationContext.Provider>
+      </ErrorBoundary>
     </div>
   );
 }

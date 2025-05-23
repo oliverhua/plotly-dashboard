@@ -1,20 +1,9 @@
-import React, { createContext, useContext, useMemo, useCallback } from 'react';
+import React, { useContext, useMemo, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import type { FolderStructure } from '../utils/dataUtils';
-
-// 創建動畫狀態上下文
-interface AnimationContextType {
-  isAnimating: boolean;
-  setIsAnimating: (value: boolean) => void;
-  lastSelectedFile: string | null;
-  setLastSelectedFile: (file: string | null) => void;
-}
-
-export const AnimationContext = createContext<AnimationContextType>({
-  isAnimating: false,
-  setIsAnimating: () => {},
-  lastSelectedFile: null,
-  setLastSelectedFile: () => {},
-});
+import { AnimationContext } from '../contexts/AnimationContext';
+import { ANIMATION_DURATION, HEADER_HEIGHT } from '../constants';
+import { removeFileExtension, formatFolderName, sortFilesByNumber } from '../utils/helpers';
 
 interface SidebarProps {
   folderStructure: FolderStructure;
@@ -35,10 +24,11 @@ interface FolderItemProps {
 }
 
 const FileItem: React.FC<{
+  folder: string;
   file: string;
   isSelected: boolean;
   onClick: () => void;
-}> = React.memo(({ file, isSelected, onClick }) => {
+}> = React.memo(({ folder, file, isSelected, onClick }) => {
   const { setIsAnimating, setLastSelectedFile } = useContext(AnimationContext);
   
   const handleClick = useCallback((e: React.MouseEvent) => {
@@ -48,18 +38,21 @@ const FileItem: React.FC<{
     setIsAnimating(true);
     setLastSelectedFile(file);
     
-    // 500ms 後重置動畫狀態（與 CSS 過渡時間匹配）
+    // Reset animation state after duration
     setTimeout(() => {
       setIsAnimating(false);
-    }, 500);
+    }, ANIMATION_DURATION);
     
     onClick();
   }, [file, onClick, setIsAnimating, setLastSelectedFile]);
   
+  // Use relative path - React Router will handle the basename
+  const linkTo = `/${encodeURIComponent(folder)}/${encodeURIComponent(file)}`;
+  
   return (
     <li>
-      <a
-        href="#"
+      <Link
+        to={linkTo}
         className={`block rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 ${
           isSelected
             ? 'bg-gray-100 text-gray-700 scale-105 shadow-sm'
@@ -67,8 +60,8 @@ const FileItem: React.FC<{
         }`}
         onClick={handleClick}
       >
-        {file.replace('.json', '')}
-      </a>
+        {removeFileExtension(file)}
+      </Link>
     </li>
   );
 });
@@ -83,27 +76,40 @@ const FolderItem: React.FC<FolderItemProps> = React.memo(({
   onFolderChange,
   onFileChange,
 }) => {
+  const { setIsAnimating, setLastSelectedFile } = useContext(AnimationContext);
+  
   const handleClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
+    
+    // If this folder isn't already selected, trigger animation
+    if (!isSelected) {
+      // Set animation state
+      setIsAnimating(true);
+      
+      // Clear last selected file since we're changing folders
+      setLastSelectedFile(null);
+      
+      // Reset animation state after duration
+      setTimeout(() => {
+        setIsAnimating(false);
+      }, ANIMATION_DURATION);
+    }
+    
     onFolderChange(folder);
-  }, [folder, onFolderChange]);
+  }, [folder, onFolderChange, isSelected, setIsAnimating, setLastSelectedFile]);
   
-  const folderDisplay = useMemo(() => folder.replace('_', ' '), [folder]);
+  const folderDisplay = useMemo(() => formatFolderName(folder), [folder]);
   
   // Sort files by their sample number
-  const sortedFiles = useMemo(() => {
-    return [...files].sort((a, b) => {
-      const numA = parseInt(a.match(/\d+/)?.[0] || '0');
-      const numB = parseInt(b.match(/\d+/)?.[0] || '0');
-      return numA - numB;
-    });
-  }, [files]);
+  const sortedFiles = useMemo(() => sortFilesByNumber(files), [files]);
   
   return (
     <li>
       <details className="group [&_summary::-webkit-details-marker]:hidden" open={isSelected}>
         <summary
-          className="flex cursor-pointer items-center justify-between rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors duration-300"
+          className={`flex cursor-pointer items-center justify-between rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-all duration-300 ${
+            isSelected ? 'bg-gray-50 font-semibold' : ''
+          }`}
           onClick={handleClick}
         >
           <span className="text-sm font-medium">{folderDisplay}</span>
@@ -128,6 +134,7 @@ const FolderItem: React.FC<FolderItemProps> = React.memo(({
           {sortedFiles.map((file) => (
             <FileItem
               key={file}
+              folder={folder}
               file={file}
               isSelected={isSelected && selectedFile === file}
               onClick={() => onFileChange(file)}
@@ -168,8 +175,8 @@ const CurrentSelection: React.FC<{ folder: string; file: string }> = React.memo(
     [isAnimating]
   );
   
-  const folderDisplay = useMemo(() => folder.replace('_', ' '), [folder]);
-  const fileDisplay = useMemo(() => file.replace('.json', ''), [file]);
+  const folderDisplay = useMemo(() => formatFolderName(folder), [folder]);
+  const fileDisplay = useMemo(() => removeFileExtension(file), [file]);
   
   return (
     <div className={className}>
@@ -229,7 +236,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div 
         className="px-4 py-6 overflow-y-auto flex-grow overflow-x-hidden" 
         style={{ 
-          maxHeight: 'calc(100vh - 80px)',
+          maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
           scrollbarWidth: 'thin',
           scrollbarColor: '#CBD5E0 transparent',
           WebkitOverflowScrolling: 'touch'

@@ -10,4 +10,23 @@ export default defineConfig({
     tailwindcss(),
   ],
   publicDir: 'public',
+  build: {
+    // Optimize chunk splitting
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separate vendor chunks for better caching
+          'react-vendor': ['react', 'react-dom'],
+          'plotly-vendor': ['plotly.js', 'react-plotly.js'],
+          'router-vendor': ['react-router-dom'],
+        },
+      },
+    },
+    // Increase chunk size warning limit for large libraries like Plotly
+    chunkSizeWarningLimit: 1000,
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom', 'plotly.js', 'react-plotly.js'],
+  },
 })
