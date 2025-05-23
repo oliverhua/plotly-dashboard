@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import ErrorBoundary from './components/ErrorBoundary';
 import HeatmapDisplay from './components/HeatmapDisplay';
@@ -18,7 +18,6 @@ function App() {
   const fileParam = params.fileParam
     ? decodeURIComponent(params.fileParam)
     : undefined;
-  const navigate = useNavigate();
 
   const {
     folderStructure,
@@ -27,26 +26,7 @@ function App() {
     heatmapData,
     isLoading,
     error,
-    setSelectedFolder,
-    setSelectedFile,
   } = useHeatmapData(folderParam, fileParam);
-
-  // Navigate when selections change - but only if they don't match URL
-  useEffect(() => {
-    if (selectedFolder && selectedFile) {
-      const currentPathFolder = folderParam || '';
-      const currentPathFile = fileParam || '';
-
-      if (
-        selectedFolder !== currentPathFolder ||
-        selectedFile !== currentPathFile
-      ) {
-        const newPath = `/${encodeURIComponent(selectedFolder)}/${encodeURIComponent(selectedFile)}`;
-        console.log(`Updating URL to match selections: ${newPath}`);
-        navigate(newPath);
-      }
-    }
-  }, [selectedFolder, selectedFile, navigate, folderParam, fileParam]);
 
   // 添加動畫狀態
   const [isAnimating, setIsAnimating] = useState(false);
@@ -142,8 +122,6 @@ function App() {
                 folderStructure={folderStructure}
                 selectedFolder={selectedFolder}
                 selectedFile={selectedFile}
-                onFolderChange={setSelectedFolder}
-                onFileChange={setSelectedFile}
               />
             </div>
 

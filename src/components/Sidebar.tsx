@@ -14,8 +14,6 @@ interface SidebarProps {
   folderStructure: FolderStructure;
   selectedFolder: string;
   selectedFile: string;
-  onFolderChange: (folder: string) => void;
-  onFileChange: (file: string) => void;
 }
 
 interface FolderItemProps {
@@ -23,21 +21,22 @@ interface FolderItemProps {
   files: readonly string[];
   isSelected: boolean;
   selectedFile: string;
-  onFolderChange: (folder: string) => void;
-  onFileChange: (file: string) => void;
 }
 
 const FileItem: React.FC<{
   folder: string;
   file: string;
   isSelected: boolean;
-  onClick: () => void;
-}> = React.memo(({ folder, file, isSelected, onClick }) => {
+}> = React.memo(({ folder, file, isSelected }) => {
   const { setIsAnimating, setLastSelectedFile } = useContext(AnimationContext);
 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
-      e.preventDefault();
+      // Don't do anything if this file is already selected
+      if (isSelected) {
+        e.preventDefault();
+        return;
+      }
 
       // 設置動畫狀態
       setIsAnimating(true);
@@ -48,9 +47,9 @@ const FileItem: React.FC<{
         setIsAnimating(false);
       }, ANIMATION_DURATION);
 
-      onClick();
+      // Let React Router handle the navigation - don't call onClick
     },
-    [file, onClick, setIsAnimating, setLastSelectedFile]
+    [file, setIsAnimating, setLastSelectedFile, isSelected]
   );
 
   // Use relative path - React Router will handle the basename
@@ -81,8 +80,6 @@ const FolderItem: React.FC<FolderItemProps> = React.memo(
     files,
     isSelected,
     selectedFile,
-    onFolderChange,
-    onFileChange,
   }) => {
     const { setIsAnimating, setLastSelectedFile } =
       useContext(AnimationContext);
@@ -105,9 +102,13 @@ const FolderItem: React.FC<FolderItemProps> = React.memo(
           }, ANIMATION_DURATION);
         }
 
-        onFolderChange(folder);
+        // Toggle the details element
+        const details = e.currentTarget.closest('details');
+        if (details) {
+          details.open = !details.open;
+        }
       },
-      [folder, onFolderChange, isSelected, setIsAnimating, setLastSelectedFile]
+      [isSelected, setIsAnimating, setLastSelectedFile]
     );
 
     const folderDisplay = useMemo(() => formatFolderName(folder), [folder]);
@@ -152,7 +153,6 @@ const FolderItem: React.FC<FolderItemProps> = React.memo(
                 folder={folder}
                 file={file}
                 isSelected={isSelected && selectedFile === file}
-                onClick={() => onFileChange(file)}
               />
             ))}
           </ul>
@@ -236,8 +236,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   folderStructure,
   selectedFolder,
   selectedFile,
-  onFolderChange,
-  onFileChange,
 }) => {
   const folders = useMemo(
     () => Object.keys(folderStructure),
@@ -286,8 +284,6 @@ const Sidebar: React.FC<SidebarProps> = ({
               files={folderStructure[folder] || []}
               isSelected={folder === selectedFolder}
               selectedFile={selectedFile}
-              onFolderChange={onFolderChange}
-              onFileChange={onFileChange}
             />
           ))}
         </ul>

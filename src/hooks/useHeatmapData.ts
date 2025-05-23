@@ -111,25 +111,31 @@ export const useHeatmapData = (
     if (
       isStructureLoaded &&
       initialFolder &&
-      initialFile &&
-      (initialFolder !== previousSelectionRef.current.folder ||
-        initialFile !== previousSelectionRef.current.file)
+      initialFile
     ) {
-      // Verify parameters are valid
-      if (
-        folderStructure[initialFolder] &&
-        folderStructure[initialFolder].includes(initialFile)
-      ) {
-        console.log(`URL params changed to ${initialFolder}/${initialFile}`);
-        setSelectedFolderState(initialFolder);
-        setSelectedFileState(initialFile);
-        previousSelectionRef.current = {
-          folder: initialFolder,
-          file: initialFile,
-        };
+      // Only update if the URL parameters are different from current state
+      const isNewSelection = 
+        initialFolder !== selectedFolder || 
+        initialFile !== selectedFile;
+      
+      // Only proceed if it's actually a new selection
+      if (isNewSelection) {
+        // Verify parameters are valid
+        if (
+          folderStructure[initialFolder] &&
+          folderStructure[initialFolder].includes(initialFile)
+        ) {
+          console.log(`URL params changed to ${initialFolder}/${initialFile}`);
+          setSelectedFolderState(initialFolder);
+          setSelectedFileState(initialFile);
+          previousSelectionRef.current = {
+            folder: initialFolder,
+            file: initialFile,
+          };
 
-        // Load data for new selection
-        loadData(initialFolder, initialFile);
+          // Load data for new selection
+          loadData(initialFolder, initialFile);
+        }
       }
     }
   }, [
@@ -137,6 +143,8 @@ export const useHeatmapData = (
     initialFile,
     isStructureLoaded,
     folderStructure,
+    selectedFolder,
+    selectedFile,
     loadData,
   ]);
 
