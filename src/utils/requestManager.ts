@@ -29,17 +29,13 @@ class RequestManager {
     cacheKey: string,
     options: RequestInit = {}
   ): Promise<HeatmapData> {
-    console.log(`RequestManager: Request for ${cacheKey}`);
-
     // 1. If the data is in cache, return it immediately
     if (this.cachedData.has(cacheKey)) {
-      console.log(`RequestManager: Cache hit for ${cacheKey}`);
       return this.cachedData.get(cacheKey)!;
     }
 
     // 2. If there's a pending request for this URL, return the existing promise
     if (this.pendingRequests.has(cacheKey)) {
-      console.log(`RequestManager: Reusing in-flight request for ${cacheKey}`);
       return this.pendingRequests.get(cacheKey)!;
     }
 
@@ -96,7 +92,6 @@ class RequestManager {
    */
   private cancelAllRequests(): void {
     if (this.activeController) {
-      console.log('RequestManager: Cancelling all active requests');
       this.activeController.abort();
       this.activeController = null;
     }

@@ -1,4 +1,6 @@
 // 導入生成的文件結構
+import { ERROR_MESSAGES } from '../constants';
+
 import { folderStructure } from './folderStructure';
 import { createCacheKey } from './helpers';
 import requestManager from './requestManager';
@@ -31,28 +33,25 @@ export const fetchFolderStructure = async (): Promise<FolderStructure> => {
  */
 export const fetchHeatmapData = async (
   folder: string,
-  filename: string
-): Promise<HeatmapData | null> => {
+  file: string
+): Promise<HeatmapData> => {
+  // Validate inputs
+  if (!folder || !file) {
+    throw new Error('Invalid folder or file parameters');
+  }
+
+  // Generate cache key for this request
+  const cacheKey = createCacheKey(folder, file);
+
+  // Use the correct path with the base URL
+  const baseUrl = import.meta.env.BASE_URL || '/plotly-dashboard/';
+  const dataPath = `${baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'}data/${folder}/${file}`;
+
   try {
-    // Generate cache key for this request
-    const cacheKey = createCacheKey(folder, filename);
-
-    // Use the correct path with the base URL
-    const baseUrl = import.meta.env.BASE_URL || '/plotly-dashboard/';
-    // Ensure we don't have double slashes in the path
-    const dataPath = `${baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'}data/${folder}/${filename}`;
-
-    console.log(`Requesting data from: ${dataPath}`);
-
-    // Use the request manager to fetch data - it handles caching, deduplication and abort control
     const data = await requestManager.fetchData(dataPath, cacheKey);
-
     return data as HeatmapData;
   } catch (error) {
-    console.error(
-      `Error fetching heatmap data for ${folder}/${filename}:`,
-      error
-    );
-    return null;
+    console.error(`Failed to fetch data from ${dataPath}:`, error);
+    throw new Error(ERROR_MESSAGES.LOAD_HEATMAP);
   }
 };

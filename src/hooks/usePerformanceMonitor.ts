@@ -1,15 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-interface PerformanceMetrics {
-  componentName: string;
-  renderTime: number;
-  timestamp: number;
-}
-
-export const usePerformanceMonitor = (
-  componentName: string,
-  enabled = import.meta.env.DEV
-) => {
+export const usePerformanceMonitor = (enabled = import.meta.env.DEV) => {
   const renderStartTime = useRef<number>(0);
   const renderCount = useRef<number>(0);
 
@@ -25,24 +16,9 @@ export const usePerformanceMonitor = (
 
     const renderTime = performance.now() - renderStartTime.current;
 
-    const metrics: PerformanceMetrics = {
-      componentName,
-      renderTime,
-      timestamp: Date.now(),
-    };
-
-    // Log performance metrics in development
+    // Performance tracking without logging
     if (renderTime > 16) {
-      // More than one frame (60fps)
-      console.warn(`🐌 Slow render detected in ${componentName}:`, {
-        renderTime: `${renderTime.toFixed(2)}ms`,
-        renderCount: renderCount.current,
-        timestamp: metrics.timestamp,
-      });
-    } else if (renderCount.current % 10 === 0) {
-      console.log(
-        `⚡ ${componentName} render #${renderCount.current}: ${renderTime.toFixed(2)}ms`
-      );
+      // More than one frame (60fps) - could add analytics here instead
     }
   });
 
@@ -53,12 +29,9 @@ export const usePerformanceMonitor = (
         renderStartTime.current = performance.now();
       }
     },
-    markEnd: (label?: string) => {
+    markEnd: () => {
       if (enabled) {
         const duration = performance.now() - renderStartTime.current;
-        console.log(
-          `⏱️ ${componentName}${label ? ` - ${label}` : ''}: ${duration.toFixed(2)}ms`
-        );
         return duration;
       }
       return 0;

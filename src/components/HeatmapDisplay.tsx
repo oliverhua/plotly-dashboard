@@ -127,18 +127,7 @@ const HeatmapDisplay: React.FC<HeatmapDisplayProps> = React.memo(
   ({ data, isLoading, error, selectedFile }) => {
     const { isAnimating } = useContext(AnimationContext);
     const renderCount = useRef(0);
-
-    // Log render count in development
-    if (import.meta.env.DEV) {
-      renderCount.current++;
-      console.log(`HeatmapDisplay render #${renderCount.current}`, {
-        hasData: !!data,
-        dataSize: data ? `${data.z.length}x${data.z[0]?.length}` : 0,
-        isLoading,
-        error,
-        selectedFile,
-      });
-    }
+    renderCount.current += 1;
 
     // Layout configuration
     const layout: Partial<Layout> = useMemo(

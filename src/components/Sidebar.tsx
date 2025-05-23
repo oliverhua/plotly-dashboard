@@ -75,12 +75,7 @@ const FileItem: React.FC<{
 FileItem.displayName = 'FileItem';
 
 const FolderItem: React.FC<FolderItemProps> = React.memo(
-  ({
-    folder,
-    files,
-    isSelected,
-    selectedFile,
-  }) => {
+  ({ folder, files, isSelected, selectedFile }) => {
     const { setIsAnimating, setLastSelectedFile } =
       useContext(AnimationContext);
 

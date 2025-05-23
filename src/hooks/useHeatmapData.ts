@@ -41,7 +41,6 @@ export const useHeatmapData = (
     if (!folder || !file) return;
 
     const selectionKey = `${folder}/${file}`;
-    console.log(`Loading data for ${selectionKey}`);
 
     try {
       setIsLoading(true);
@@ -64,7 +63,6 @@ export const useHeatmapData = (
   useEffect(() => {
     if (!isInitialized.current) {
       const loadStructure = async () => {
-        console.log('Loading folder structure (once)');
         try {
           const structure = await fetchFolderStructure();
           setFolderStructure(structure);
@@ -86,7 +84,6 @@ export const useHeatmapData = (
               file = structure[folder]?.[0] || '';
             }
 
-            console.log(`Initial selection: ${folder}/${file}`);
             setSelectedFolderState(folder);
             setSelectedFileState(file);
             previousSelectionRef.current = { folder, file };
@@ -108,16 +105,11 @@ export const useHeatmapData = (
 
   // Update based on URL parameters (if they're valid and different from current selection)
   useEffect(() => {
-    if (
-      isStructureLoaded &&
-      initialFolder &&
-      initialFile
-    ) {
+    if (isStructureLoaded && initialFolder && initialFile) {
       // Only update if the URL parameters are different from current state
-      const isNewSelection = 
-        initialFolder !== selectedFolder || 
-        initialFile !== selectedFile;
-      
+      const isNewSelection =
+        initialFolder !== selectedFolder || initialFile !== selectedFile;
+
       // Only proceed if it's actually a new selection
       if (isNewSelection) {
         // Verify parameters are valid
@@ -125,7 +117,6 @@ export const useHeatmapData = (
           folderStructure[initialFolder] &&
           folderStructure[initialFolder].includes(initialFile)
         ) {
-          console.log(`URL params changed to ${initialFolder}/${initialFile}`);
           setSelectedFolderState(initialFolder);
           setSelectedFileState(initialFile);
           previousSelectionRef.current = {
@@ -153,7 +144,6 @@ export const useHeatmapData = (
     (folder: string) => {
       if (folder === selectedFolder) return;
 
-      console.log(`Folder changed to ${folder}`);
       setSelectedFolderState(folder);
 
       // Find a valid file in the folder
@@ -174,7 +164,6 @@ export const useHeatmapData = (
     (file: string) => {
       if (file === selectedFile) return;
 
-      console.log(`File changed to ${file}`);
       setSelectedFileState(file);
       previousSelectionRef.current = { folder: selectedFolder, file };
 
