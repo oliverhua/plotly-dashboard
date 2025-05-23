@@ -16,7 +16,6 @@ interface SidebarProps {
   selectedFile: string;
   onFolderChange: (folder: string) => void;
   onFileChange: (file: string) => void;
-  isLoading: boolean;
 }
 
 interface FolderItemProps {
@@ -165,34 +164,6 @@ const FolderItem: React.FC<FolderItemProps> = React.memo(
 
 FolderItem.displayName = 'FolderItem';
 
-const LoadingIndicator: React.FC = React.memo(() => (
-  <li>
-    <a
-      href="#"
-      className="flex items-center rounded-lg px-4 py-2 text-sm font-medium text-gray-500"
-      onClick={e => e.preventDefault()}
-    >
-      <svg
-        className="mr-2 size-4 animate-spin"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeDasharray="1 3"
-        />
-      </svg>
-      Loading...
-    </a>
-  </li>
-));
-
-LoadingIndicator.displayName = 'LoadingIndicator';
-
 const CurrentSelection: React.FC<{ folder: string; file: string }> = React.memo(
   ({ folder, file }) => {
     const { isAnimating } = useContext(AnimationContext);
@@ -267,7 +238,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   selectedFile,
   onFolderChange,
   onFileChange,
-  isLoading,
 }) => {
   const folders = useMemo(
     () => Object.keys(folderStructure),
@@ -320,8 +290,6 @@ const Sidebar: React.FC<SidebarProps> = ({
               onFileChange={onFileChange}
             />
           ))}
-
-          {isLoading && <LoadingIndicator />}
         </ul>
       </div>
 

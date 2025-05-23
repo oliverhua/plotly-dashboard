@@ -144,7 +144,6 @@ function App() {
                 selectedFile={selectedFile}
                 onFolderChange={setSelectedFolder}
                 onFileChange={setSelectedFile}
-                isLoading={isLoading}
               />
             </div>
 
