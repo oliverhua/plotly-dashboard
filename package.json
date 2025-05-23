@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "node scripts/generate_folder_structure.js && tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "format:write": "prettier --write ."
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.6",
@@ -22,6 +25,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@types/react-plotly.js": "^2.6.3",
@@ -32,6 +36,7 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
     "postcss": "^8.5.3",
+    "prettier": "^3.5.3",
     "tailwindcss": "^4.1.6",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",

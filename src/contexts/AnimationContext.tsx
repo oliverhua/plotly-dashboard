@@ -14,4 +14,4 @@ export const AnimationContext = createContext<AnimationContextType>({
   setIsAnimating: () => {},
   lastSelectedFile: null,
   setLastSelectedFile: () => {},
-}); 
+});

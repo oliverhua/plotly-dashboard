@@ -40,5 +40,6 @@ export const ERROR_MESSAGES = {
   LOAD_HEATMAP: 'Failed to load heatmap data',
   HTML_RESPONSE: 'Received HTML instead of JSON',
   HTTP_ERROR: (status: number) => `HTTP error! Status: ${status}`,
-  HTML_CONTENT: (status: number) => `Received HTML instead of JSON. Status: ${status}`,
-} as const; 
+  HTML_CONTENT: (status: number) =>
+    `Received HTML instead of JSON. Status: ${status}`,
+} as const;

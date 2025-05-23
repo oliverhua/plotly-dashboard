@@ -1,5 +1,6 @@
-import type { HeatmapData } from './dataUtils';
 import { ERROR_MESSAGES } from '../constants';
+
+import type { HeatmapData } from './dataUtils';
 
 /**
  * Global request manager to prevent duplicate requests
@@ -24,31 +25,31 @@ class RequestManager {
    * Fetch data with caching and request deduplication
    */
   public async fetchData(
-    url: string, 
+    url: string,
     cacheKey: string,
     options: RequestInit = {}
   ): Promise<HeatmapData> {
     console.log(`RequestManager: Request for ${cacheKey}`);
-    
+
     // 1. If the data is in cache, return it immediately
     if (this.cachedData.has(cacheKey)) {
       console.log(`RequestManager: Cache hit for ${cacheKey}`);
       return this.cachedData.get(cacheKey)!;
     }
-    
+
     // 2. If there's a pending request for this URL, return the existing promise
     if (this.pendingRequests.has(cacheKey)) {
       console.log(`RequestManager: Reusing in-flight request for ${cacheKey}`);
       return this.pendingRequests.get(cacheKey)!;
     }
-    
+
     // 3. Cancel any other requests
     this.cancelAllRequests();
 
     // 4. Create a new abort controller for this request
     this.activeController = new AbortController();
     options.signal = this.activeController.signal;
-    
+
     // 5. Create and store the new request promise
     const requestPromise = fetch(url, options)
       .then(response => {
@@ -62,17 +63,20 @@ class RequestManager {
         return response.text();
       })
       .then(text => {
-        if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+        if (
+          text.trim().startsWith('<!DOCTYPE') ||
+          text.trim().startsWith('<html')
+        ) {
           throw new Error(ERROR_MESSAGES.HTML_RESPONSE);
         }
         const data = JSON.parse(text) as HeatmapData;
-        
+
         // Store in cache
         this.cachedData.set(cacheKey, data);
-        
+
         // Remove from pending
         this.pendingRequests.delete(cacheKey);
-        
+
         return data;
       })
       .catch(error => {
@@ -80,10 +84,10 @@ class RequestManager {
         this.pendingRequests.delete(cacheKey);
         throw error;
       });
-    
+
     // Store the promise
     this.pendingRequests.set(cacheKey, requestPromise);
-    
+
     return requestPromise;
   }
 
@@ -113,4 +117,4 @@ class RequestManager {
   }
 }
 
-export default RequestManager.getInstance(); 
+export default RequestManager.getInstance();

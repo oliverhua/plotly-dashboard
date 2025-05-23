@@ -5,17 +5,19 @@ import path from 'path';
 function generateFolderStructure() {
   const dataDir = path.resolve('public/data');
   const folderStructure = {};
-  
+
   // 讀取所有文件夾
-  const folders = fs.readdirSync(dataDir, { withFileTypes: true })
+  const folders = fs
+    .readdirSync(dataDir, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory())
     .map(dirent => dirent.name)
     .sort();
-  
+
   // 讀取每個文件夾中的文件
   for (const folder of folders) {
     const folderPath = path.join(dataDir, folder);
-    const files = fs.readdirSync(folderPath)
+    const files = fs
+      .readdirSync(folderPath)
       .filter(file => path.extname(file) === '.json')
       .sort((a, b) => {
         const numA = parseInt(a.match(/\d+/)?.[0] || '0');
@@ -24,7 +26,7 @@ function generateFolderStructure() {
       });
     folderStructure[folder] = files;
   }
-  
+
   return folderStructure;
 }
 
@@ -36,4 +38,4 @@ export const folderStructure = ${JSON.stringify(folderStructure, null, 2)} as co
 
 // 寫入文件
 fs.writeFileSync('src/utils/folderStructure.ts', content);
-console.log('Folder structure generated successfully!'); 
+console.log('Folder structure generated successfully!');

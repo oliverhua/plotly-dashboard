@@ -1,14 +1,11 @@
-import { defineConfig } from 'vite'
-import tailwindcss from '@tailwindcss/vite'
-import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
 
 // https://vite.dev/config/
 export default defineConfig({
   base: '/plotly-dashboard/',
-  plugins: [
-    react(),
-    tailwindcss(),
-  ],
+  plugins: [react(), tailwindcss()],
   publicDir: 'public',
   build: {
     // Optimize chunk splitting
@@ -27,6 +24,12 @@ export default defineConfig({
   },
   // Optimize dependencies
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom', 'plotly.js', 'react-plotly.js'],
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      'plotly.js',
+      'react-plotly.js',
+    ],
   },
-})
+});

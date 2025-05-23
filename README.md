@@ -15,6 +15,7 @@ A modern, optimized React application for visualizing heatmap data using Plotly.
 ## 🏗️ Architecture & Optimizations
 
 ### Code Structure
+
 ```
 src/
 ├── components/          # React components
@@ -38,18 +39,21 @@ src/
 ### Performance Optimizations
 
 1. **Request Management**
+
    - Global singleton request manager
    - Request deduplication and caching
    - Automatic request cancellation
    - Error handling with retry logic
 
 2. **React Optimizations**
+
    - Memoized components with `React.memo`
    - Optimized context usage to prevent unnecessary re-renders
    - Proper dependency arrays in hooks
    - Lazy loading and code splitting
 
 3. **Build Optimizations**
+
    - Vite configuration with chunk splitting
    - Vendor chunk separation for better caching
    - Optimized dependency pre-bundling
@@ -72,30 +76,36 @@ src/
 ## 🛠️ Development
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - Yarn package manager
 
 ### Installation
+
 ```bash
    yarn install
-   ```
+```
 
 ### Development Server
+
 ```bash
    yarn dev
-   ```
+```
 
 ### Build for Production
+
 ```bash
 yarn build
 ```
 
 ### Linting
+
 ```bash
 yarn lint
 ```
 
 ### Preview Production Build
+
 ```bash
 yarn preview
 ```
@@ -103,6 +113,7 @@ yarn preview
 ## 📁 Data Structure
 
 The application expects data files in the following structure:
+
 ```
 public/data/
 ├── folder1/
@@ -116,9 +127,14 @@ public/data/
 ```
 
 Each JSON file should contain heatmap data in the format:
+
 ```json
 {
-  "z": [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+  "z": [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+  ],
   "x": ["A", "B", "C"],
   "y": ["X", "Y", "Z"]
 }
@@ -127,17 +143,22 @@ Each JSON file should contain heatmap data in the format:
 ## 🎨 Customization
 
 ### Constants
+
 All application constants are centralized in `src/constants/index.ts`:
+
 - Animation durations
 - Plot configuration
 - UI dimensions
 - Error messages
 
 ### Styling
+
 The application uses Tailwind CSS with custom configurations. Modify `tailwind.config.js` for theme customization.
 
 ### Performance Monitoring
+
 In development mode, the application includes performance monitoring that logs:
+
 - Component render times
 - Slow render warnings (>16ms)
 - Request timing and caching statistics
