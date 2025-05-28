@@ -41,21 +41,6 @@ function App() {
     string | null
   >(null);
 
-  // 添加頁面標題動畫效果
-  const [titleClass, setTitleClass] = useState('');
-
-  useEffect(() => {
-    if (isAnimating) {
-      setTitleClass('text-blue-600 scale-105 origin-left');
-
-      const timer = setTimeout(() => {
-        setTitleClass('');
-      }, ANIMATION_DURATION);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isAnimating]);
-
   // Memoize AnimationContext value to prevent unnecessary re-renders
   const animationContextValue = useMemo(
     () => ({
@@ -78,8 +63,8 @@ function App() {
 
   const titleClassName = useMemo(
     () =>
-      `text-xl font-semibold text-gray-800 transition-all duration-300 ${titleClass}`,
-    [titleClass]
+      `text-xl font-semibold text-gray-800`,
+    []
   );
 
   const mainClassName = useMemo(
