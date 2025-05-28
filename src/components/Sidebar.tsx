@@ -257,11 +257,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           WebkitOverflowScrolling: 'touch',
         }}
       >
-        <span className="grid h-10 w-32 place-content-center rounded-lg bg-gray-100 text-xs text-gray-600">
-          Heatmap Data
-        </span>
-
-        <ul className="mt-6 space-y-1">
+        <ul className="mt-1 space-y-1">
           <li>
             <a
               href="#"
