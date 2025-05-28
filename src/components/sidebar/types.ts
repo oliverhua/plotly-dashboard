@@ -4,6 +4,13 @@ export interface SidebarProps {
   folderStructure: FolderStructure;
   selectedFolder: string;
   selectedTestcase: string;
+  selectedFile?: string;
+}
+
+export interface SidebarContentProps {
+  folderStructure: FolderStructure;
+  selectedFolder: string;
+  selectedTestcase: string;
 }
 
 export interface FolderItemProps {
@@ -16,5 +23,11 @@ export interface FolderItemProps {
 export interface TestcaseItemProps {
   folder: string;
   testcase: string;
+  isSelected: boolean;
+}
+
+export interface FileItemProps {
+  folder: string;
+  file: string;
   isSelected: boolean;
 }

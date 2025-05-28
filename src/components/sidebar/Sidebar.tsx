@@ -9,7 +9,7 @@ import type { SidebarProps } from './types';
 const Sidebar: React.FC<SidebarProps> = ({
   folderStructure,
   selectedFolder,
-  selectedFile,
+  selectedTestcase,
 }) => {
   const { isAnimating } = useContext(AnimationContext);
 
@@ -26,7 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <SidebarContent
         folderStructure={folderStructure}
         selectedFolder={selectedFolder}
-        selectedFile={selectedFile}
+        selectedTestcase={selectedTestcase}
       />
       <SidebarFooter />
     </div>

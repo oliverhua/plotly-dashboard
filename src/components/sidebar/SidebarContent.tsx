@@ -3,9 +3,9 @@ import React, { useMemo } from 'react';
 import { HEADER_HEIGHT } from '../../constants';
 
 import FolderItem from './FolderItem';
-import type { SidebarProps } from './types';
+import type { SidebarContentProps } from './types';
 
-const SidebarContent: React.FC<SidebarProps> = ({
+const SidebarContent: React.FC<SidebarContentProps> = ({
   folderStructure,
   selectedFolder,
   selectedTestcase,
