@@ -2,7 +2,7 @@
 export const UI_STRINGS = {
   // App Header
   APP_TITLE: 'Heatmap Data Visualization',
-  APP_SUBTITLE: 'Made with ❤️ by Oliver(oliverhua)',
+  APP_SUBTITLE: 'Made with ❤️ by Oliver(oliverhua) & Jenny(shenjenny)',
 
   // Main Content
   DEFAULT_CONTENT_TITLE: 'Heatmap Visualization',
