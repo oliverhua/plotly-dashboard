@@ -1,23 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ERROR_MESSAGES } from '../constants';
-import { fetchFolderStructure, fetchHeatmapData } from '../utils/dataUtils';
-import type { FolderStructure, HeatmapData } from '../utils/dataUtils';
+import { fetchFolderStructure, fetchTestcaseData } from '../utils/dataUtils';
+import type { FolderStructure, TestcaseData } from '../utils/dataUtils';
 
 interface UseHeatmapDataResult {
   folderStructure: FolderStructure;
   selectedFolder: string;
-  selectedFile: string;
-  heatmapData: HeatmapData | null;
+  selectedTestcase: string;
+  testcaseData: TestcaseData | null;
   isLoading: boolean;
   error: string | null;
   setSelectedFolder: (folder: string) => void;
-  setSelectedFile: (file: string) => void;
+  setSelectedTestcase: (testcase: string) => void;
 }
 
 export const useHeatmapData = (
   initialFolder?: string,
-  initialFile?: string
+  initialTestcase?: string
 ): UseHeatmapDataResult => {
   // State for folder structure
   const [folderStructure, setFolderStructure] = useState<FolderStructure>({});
@@ -25,32 +25,32 @@ export const useHeatmapData = (
 
   // State for current selection
   const [selectedFolder, setSelectedFolderState] = useState<string>('');
-  const [selectedFile, setSelectedFileState] = useState<string>('');
+  const [selectedTestcase, setSelectedTestcaseState] = useState<string>('');
 
   // State for data
-  const [heatmapData, setHeatmapData] = useState<HeatmapData | null>(null);
+  const [testcaseData, setTestcaseData] = useState<TestcaseData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   // Refs to track initialization and previous values
   const isInitialized = useRef(false);
-  const previousSelectionRef = useRef({ folder: '', file: '' });
+  const previousSelectionRef = useRef({ folder: '', testcase: '' });
 
   // Handle data loading
-  const loadData = useCallback(async (folder: string, file: string) => {
-    if (!folder || !file) return;
+  const loadData = useCallback(async (folder: string, testcase: string) => {
+    if (!folder || !testcase) return;
 
-    const selectionKey = `${folder}/${file}`;
+    const selectionKey = `${folder}/${testcase}`;
 
     try {
       setIsLoading(true);
       setError(null);
 
-      const data = await fetchHeatmapData(folder, file);
-      setHeatmapData(data);
+      const data = await fetchTestcaseData(folder, testcase);
+      setTestcaseData(data);
     } catch (err: unknown) {
       console.error(`Error loading data for ${selectionKey}:`, err);
-      setHeatmapData(null);
+      setTestcaseData(null);
       const errorMessage =
         err instanceof Error ? err.message : ERROR_MESSAGES.LOAD_HEATMAP;
       setError(errorMessage);
@@ -73,23 +73,26 @@ export const useHeatmapData = (
           if (folders.length > 0) {
             // Use initial values from props if valid, otherwise use defaults
             let folder = initialFolder || '';
-            let file = initialFile || '';
+            let testcase = initialTestcase || '';
 
             // If initial values aren't valid, use first available
             if (!folder || !structure[folder]) {
               folder = folders[0];
             }
 
-            if (!file || !structure[folder]?.includes(file)) {
-              file = structure[folder]?.[0] || '';
+            const testcases = Object.keys(structure[folder] || {});
+            if (!testcase || !structure[folder]?.[testcase]) {
+              testcase = testcases[0] || '';
             }
 
             setSelectedFolderState(folder);
-            setSelectedFileState(file);
-            previousSelectionRef.current = { folder, file };
+            setSelectedTestcaseState(testcase);
+            previousSelectionRef.current = { folder, testcase };
 
             // Initial data load
-            loadData(folder, file);
+            if (folder && testcase) {
+              loadData(folder, testcase);
+            }
           }
 
           isInitialized.current = true;
@@ -101,41 +104,41 @@ export const useHeatmapData = (
 
       loadStructure();
     }
-  }, [initialFolder, initialFile, loadData]);
+  }, [initialFolder, initialTestcase, loadData]);
 
   // Update based on URL parameters (if they're valid and different from current selection)
   useEffect(() => {
-    if (isStructureLoaded && initialFolder && initialFile) {
+    if (isStructureLoaded && initialFolder && initialTestcase) {
       // Only update if the URL parameters are different from current state
       const isNewSelection =
-        initialFolder !== selectedFolder || initialFile !== selectedFile;
+        initialFolder !== selectedFolder || initialTestcase !== selectedTestcase;
 
       // Only proceed if it's actually a new selection
       if (isNewSelection) {
         // Verify parameters are valid
         if (
           folderStructure[initialFolder] &&
-          folderStructure[initialFolder].includes(initialFile)
+          folderStructure[initialFolder][initialTestcase]
         ) {
           setSelectedFolderState(initialFolder);
-          setSelectedFileState(initialFile);
+          setSelectedTestcaseState(initialTestcase);
           previousSelectionRef.current = {
             folder: initialFolder,
-            file: initialFile,
+            testcase: initialTestcase,
           };
 
           // Load data for new selection
-          loadData(initialFolder, initialFile);
+          loadData(initialFolder, initialTestcase);
         }
       }
     }
   }, [
     initialFolder,
-    initialFile,
+    initialTestcase,
     isStructureLoaded,
     folderStructure,
     selectedFolder,
-    selectedFile,
+    selectedTestcase,
     loadData,
   ]);
 
@@ -146,43 +149,43 @@ export const useHeatmapData = (
 
       setSelectedFolderState(folder);
 
-      // Find a valid file in the folder
-      const files = folderStructure[folder] || [];
-      if (files.length > 0) {
-        const newFile = files[0];
-        setSelectedFileState(newFile);
-        previousSelectionRef.current = { folder, file: newFile };
+      // Find a valid testcase in the folder
+      const testcases = Object.keys(folderStructure[folder] || {});
+      if (testcases.length > 0) {
+        const newTestcase = testcases[0];
+        setSelectedTestcaseState(newTestcase);
+        previousSelectionRef.current = { folder, testcase: newTestcase };
 
         // Load data for new selection
-        loadData(folder, newFile);
+        loadData(folder, newTestcase);
       }
     },
     [selectedFolder, folderStructure, loadData]
   );
 
-  const setSelectedFile = useCallback(
-    (file: string) => {
-      if (file === selectedFile) return;
+  const setSelectedTestcase = useCallback(
+    (testcase: string) => {
+      if (testcase === selectedTestcase) return;
 
-      setSelectedFileState(file);
-      previousSelectionRef.current = { folder: selectedFolder, file };
+      setSelectedTestcaseState(testcase);
+      previousSelectionRef.current = { folder: selectedFolder, testcase };
 
       // Load data for new selection
       if (selectedFolder) {
-        loadData(selectedFolder, file);
+        loadData(selectedFolder, testcase);
       }
     },
-    [selectedFile, selectedFolder, loadData]
+    [selectedTestcase, selectedFolder, loadData]
   );
 
   return {
     folderStructure,
     selectedFolder,
-    selectedFile,
-    heatmapData,
+    selectedTestcase,
+    testcaseData,
     isLoading,
     error,
     setSelectedFolder,
-    setSelectedFile,
+    setSelectedTestcase,
   };
 };

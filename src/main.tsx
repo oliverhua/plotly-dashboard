@@ -10,7 +10,7 @@ createRoot(document.getElementById('root')!).render(
     <HashRouter>
       <Routes>
         <Route path="/" element={<App />} />
-        <Route path="/:folderParam/:fileParam" element={<App />} />
+        <Route path="/:folderParam/:testcaseParam" element={<App />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </HashRouter>

@@ -3,18 +3,18 @@ import type { FolderStructure } from '../../utils/dataUtils';
 export interface SidebarProps {
   folderStructure: FolderStructure;
   selectedFolder: string;
-  selectedFile: string;
+  selectedTestcase: string;
 }
 
 export interface FolderItemProps {
   folder: string;
-  files: readonly string[];
+  testcases: { [testcase: string]: readonly string[] };
   isSelected: boolean;
-  selectedFile: string;
+  selectedTestcase: string;
 }
 
-export interface FileItemProps {
+export interface TestcaseItemProps {
   folder: string;
-  file: string;
+  testcase: string;
   isSelected: boolean;
 }

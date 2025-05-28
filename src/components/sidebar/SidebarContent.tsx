@@ -8,7 +8,7 @@ import type { SidebarProps } from './types';
 const SidebarContent: React.FC<SidebarProps> = ({
   folderStructure,
   selectedFolder,
-  selectedFile,
+  selectedTestcase,
 }) => {
   const folders = useMemo(
     () => Object.keys(folderStructure),
@@ -30,9 +30,9 @@ const SidebarContent: React.FC<SidebarProps> = ({
           <FolderItem
             key={folder}
             folder={folder}
-            files={folderStructure[folder] || []}
+            testcases={folderStructure[folder] || {}}
             isSelected={folder === selectedFolder}
-            selectedFile={selectedFile}
+            selectedTestcase={selectedTestcase}
           />
         ))}
       </ul>

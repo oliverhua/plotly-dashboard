@@ -39,6 +39,7 @@ export const UI_STRINGS = {
     SIDEBAR_FOOTER: 'SidebarFooter',
     FOLDER_ITEM: 'FolderItem',
     FILE_ITEM: 'FileItem',
+    TESTCASE_ITEM: 'TestcaseItem',
   },
 
   // Plotly Configuration

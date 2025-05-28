@@ -1,19 +1,19 @@
 import React, { useCallback, useMemo } from 'react';
 
 import { DISPLAY_NAMES } from '../../constants';
-import { formatFolderName, sortFilesByNumber } from '../../utils/helpers';
+import { formatFolderName } from '../../utils/helpers';
 
-import FileItem from './FileItem';
+import TestcaseItem from './TestcaseItem';
 import { CheckmarkIcon, ChevronDownIcon } from './icons';
 import type { FolderItemProps } from './types';
 
 const FolderItem: React.FC<FolderItemProps> = React.memo(
-  ({ folder, files, isSelected, selectedFile }) => {
+  ({ folder, testcases, isSelected, selectedTestcase }) => {
     const handleClick = useCallback((e: React.MouseEvent) => {
       e.preventDefault();
 
       // Don't trigger animation for folder clicks - only toggle the details
-      // Animation should only happen when selecting files, not folders
+      // Animation should only happen when selecting testcases, not folders
       const details = e.currentTarget.closest('details');
       if (details) {
         details.open = !details.open;
@@ -22,8 +22,8 @@ const FolderItem: React.FC<FolderItemProps> = React.memo(
 
     const folderDisplay = useMemo(() => formatFolderName(folder), [folder]);
 
-    // Sort files by their sample number
-    const sortedFiles = useMemo(() => sortFilesByNumber(files), [files]);
+    // Get testcase names
+    const testcaseNames = useMemo(() => Object.keys(testcases), [testcases]);
 
     return (
       <li>
@@ -50,12 +50,12 @@ const FolderItem: React.FC<FolderItemProps> = React.memo(
           </summary>
 
           <ul className="mt-2 space-y-1 px-4">
-            {sortedFiles.map(file => (
-              <FileItem
-                key={file}
+            {testcaseNames.map(testcase => (
+              <TestcaseItem
+                key={testcase}
                 folder={folder}
-                file={file}
-                isSelected={isSelected && selectedFile === file}
+                testcase={testcase}
+                isSelected={isSelected && selectedTestcase === testcase}
               />
             ))}
           </ul>

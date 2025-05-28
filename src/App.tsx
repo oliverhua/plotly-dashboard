@@ -14,30 +14,30 @@ import {
 } from './constants';
 import { AnimationContext } from './contexts/AnimationContext';
 import { useHeatmapData } from './hooks/useHeatmapData';
-import { formatFolderName, removeFileExtension } from './utils/helpers';
+import { formatFolderName } from './utils/helpers';
 
 function App() {
   // URL parameters - decode them to handle any URL encoding
-  const params = useParams<{ folderParam: string; fileParam: string }>();
+  const params = useParams<{ folderParam: string; testcaseParam: string }>();
   const folderParam = params.folderParam
     ? decodeURIComponent(params.folderParam)
     : undefined;
-  const fileParam = params.fileParam
-    ? decodeURIComponent(params.fileParam)
+  const testcaseParam = params.testcaseParam
+    ? decodeURIComponent(params.testcaseParam)
     : undefined;
 
   const {
     folderStructure,
     selectedFolder,
-    selectedFile,
-    heatmapData,
+    selectedTestcase,
+    testcaseData,
     isLoading,
     error,
-  } = useHeatmapData(folderParam, fileParam);
+  } = useHeatmapData(folderParam, testcaseParam);
 
   // 添加動畫狀態
   const [isAnimating, setIsAnimating] = useState(false);
-  const [lastSelectedFile, setLastSelectedFile] = useState<string | null>(null);
+  const [lastSelectedTestcase, setLastSelectedTestcase] = useState<string | null>(null);
 
   // 添加頁面標題動畫效果
   const [titleClass, setTitleClass] = useState('');
@@ -59,10 +59,10 @@ function App() {
     () => ({
       isAnimating,
       setIsAnimating,
-      lastSelectedFile,
-      setLastSelectedFile,
+      lastSelectedFile: lastSelectedTestcase,
+      setLastSelectedFile: setLastSelectedTestcase,
     }),
-    [isAnimating, lastSelectedFile]
+    [isAnimating, lastSelectedTestcase]
   );
 
   // Memoize class names
@@ -129,7 +129,7 @@ function App() {
               <Sidebar
                 folderStructure={folderStructure}
                 selectedFolder={selectedFolder}
-                selectedFile={selectedFile}
+                selectedTestcase={selectedTestcase}
               />
             </div>
 
@@ -138,12 +138,12 @@ function App() {
               <div className="max-w-6xl mx-auto">
                 <div className={titleContainerClassName}>
                   <h2 className={contentTitleClassName}>
-                    {selectedFolder && selectedFile
-                      ? `${formatFolderName(selectedFolder)} - ${removeFileExtension(selectedFile)}`
+                    {selectedFolder && selectedTestcase
+                      ? `${formatFolderName(selectedFolder)} - ${selectedTestcase}`
                       : DEFAULT_CONTENT_TITLE}
                   </h2>
                   <p className="text-sm text-gray-500 mt-1">
-                    {selectedFolder && selectedFile
+                    {selectedFolder && selectedTestcase
                       ? INTERACTIVE_DESCRIPTION
                       : SELECT_INSTRUCTION}
                   </p>
@@ -151,10 +151,10 @@ function App() {
 
                 <div className={heatmapContainerClassName}>
                   <HeatmapDisplay
-                    data={heatmapData}
+                    testcaseData={testcaseData}
                     isLoading={isLoading}
                     error={error}
-                    selectedFile={selectedFile}
+                    selectedTestcase={selectedTestcase}
                   />
                 </div>
               </div>

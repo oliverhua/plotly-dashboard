@@ -10,7 +10,7 @@ class RequestManager {
   private static instance: RequestManager;
   private pendingRequests: Map<string, Promise<HeatmapData>> = new Map();
   private cachedData: Map<string, HeatmapData> = new Map();
-  private activeController: AbortController | null = null;
+  private activeControllers: Map<string, AbortController> = new Map();
 
   private constructor() {}
 
@@ -39,14 +39,12 @@ class RequestManager {
       return this.pendingRequests.get(cacheKey)!;
     }
 
-    // 3. Cancel any other requests
-    this.cancelAllRequests();
+    // 3. Create a new abort controller for this specific request
+    const controller = new AbortController();
+    this.activeControllers.set(cacheKey, controller);
+    options.signal = controller.signal;
 
-    // 4. Create a new abort controller for this request
-    this.activeController = new AbortController();
-    options.signal = this.activeController.signal;
-
-    // 5. Create and store the new request promise
+    // 4. Create and store the new request promise
     const requestPromise = fetch(url, options)
       .then(response => {
         if (!response.ok) {
@@ -70,14 +68,16 @@ class RequestManager {
         // Store in cache
         this.cachedData.set(cacheKey, data);
 
-        // Remove from pending
+        // Clean up
         this.pendingRequests.delete(cacheKey);
+        this.activeControllers.delete(cacheKey);
 
         return data;
       })
       .catch(error => {
-        // Remove from pending on error
+        // Clean up on error
         this.pendingRequests.delete(cacheKey);
+        this.activeControllers.delete(cacheKey);
         throw error;
       });
 
@@ -88,13 +88,26 @@ class RequestManager {
   }
 
   /**
+   * Cancel a specific request
+   */
+  public cancelRequest(cacheKey: string): void {
+    const controller = this.activeControllers.get(cacheKey);
+    if (controller) {
+      controller.abort();
+      this.activeControllers.delete(cacheKey);
+      this.pendingRequests.delete(cacheKey);
+    }
+  }
+
+  /**
    * Cancel all ongoing requests
    */
-  private cancelAllRequests(): void {
-    if (this.activeController) {
-      this.activeController.abort();
-      this.activeController = null;
+  public cancelAllRequests(): void {
+    for (const [cacheKey, controller] of this.activeControllers) {
+      controller.abort();
     }
+    this.activeControllers.clear();
+    this.pendingRequests.clear();
   }
 
   /**

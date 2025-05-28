@@ -21,13 +21,13 @@ import {
   TRANSITION_DURATION,
 } from '../constants';
 import { AnimationContext } from '../contexts/AnimationContext';
-import type { HeatmapData } from '../utils/dataUtils';
+import type { TestcaseData } from '../utils/dataUtils';
 
 interface HeatmapDisplayProps {
-  data: HeatmapData | null;
+  testcaseData: TestcaseData | null;
   isLoading: boolean;
   error: string | null;
-  selectedFile: string;
+  selectedTestcase: string;
 }
 
 // 提取狀態顯示組件以減少重複代碼
@@ -130,53 +130,100 @@ const EmptyState = React.memo(() => (
 
 EmptyState.displayName = DISPLAY_NAMES.EMPTY_STATE;
 
+// Individual heatmap component
+const SingleHeatmap = React.memo(({ filename, data, isAnimating }: {
+  filename: string;
+  data: { z: number[][]; x: string[]; y: string[] };
+  isAnimating: boolean;
+}) => {
+  // Layout configuration for individual heatmap
+  const layout: Partial<Layout> = useMemo(
+    () => ({
+      title: {
+        text: filename.replace(JSON_EXTENSION, ''),
+        font: {
+          family: PLOT_CONFIG.FONT_FAMILY,
+          size: PLOT_CONFIG.TITLE_FONT_SIZE,
+        },
+      },
+      autosize: true,
+      margin: {
+        l: PLOT_MARGINS.LEFT,
+        r: PLOT_MARGINS.RIGHT,
+        b: PLOT_MARGINS.BOTTOM,
+        t: PLOT_MARGINS.TOP,
+        pad: PLOT_MARGINS.PAD,
+      },
+      height: PLOT_HEIGHT,
+      font: {
+        family: PLOT_CONFIG.FONT_FAMILY,
+        size: PLOT_CONFIG.BODY_FONT_SIZE,
+        color: PLOT_CONFIG.FONT_COLOR,
+      },
+    }),
+    [filename]
+  );
+
+  // Plotly configuration
+  const plotConfig: Partial<Config> = useMemo(
+    () => ({
+      responsive: true,
+      displayModeBar: true,
+      modeBarButtonsToRemove: [...PLOTLY.MODE_BAR_BUTTONS_TO_REMOVE],
+      displaylogo: false,
+    }),
+    []
+  );
+
+  // Heatmap data
+  const plotData = useMemo(() => [
+    {
+      z: data.z,
+      x: data.x,
+      y: data.y,
+      type: PLOTLY.HEATMAP_TYPE,
+      colorscale: PLOT_CONFIG.COLORSCALE,
+      showscale: true,
+    },
+  ], [data]);
+
+  // Plot container style
+  const plotContainerStyle = useMemo(
+    () => ({
+      width: '100%',
+      height: '100%',
+      transition: `all ${TRANSITION_DURATION.MEDIUM}ms cubic-bezier(0.4, 0, 0.2, 1)`,
+      filter: isAnimating ? 'blur(2px)' : 'blur(0px)',
+      opacity: isAnimating ? 0.8 : 1,
+      transform: isAnimating ? 'scale(0.99)' : 'scale(1)',
+    }),
+    [isAnimating]
+  );
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden mb-6">
+      <div className="p-4">
+        <Plot
+          data={plotData}
+          layout={layout}
+          config={plotConfig}
+          style={plotContainerStyle}
+        />
+      </div>
+    </div>
+  );
+});
+
+SingleHeatmap.displayName = 'SingleHeatmap';
+
 // The main heatmap display component
 const HeatmapDisplay: React.FC<HeatmapDisplayProps> = React.memo(
-  ({ data, isLoading, error, selectedFile }) => {
+  ({ testcaseData, isLoading, error, selectedTestcase }) => {
     const { isAnimating } = useContext(AnimationContext);
     const renderCount = useRef(0);
     renderCount.current += 1;
 
-    // Layout configuration
-    const layout: Partial<Layout> = useMemo(
-      () => ({
-        title: {
-          text: selectedFile.replace(JSON_EXTENSION, ''),
-          font: {
-            family: PLOT_CONFIG.FONT_FAMILY,
-            size: PLOT_CONFIG.TITLE_FONT_SIZE,
-          },
-        },
-        autosize: true,
-        margin: {
-          l: PLOT_MARGINS.LEFT,
-          r: PLOT_MARGINS.RIGHT,
-          b: PLOT_MARGINS.BOTTOM,
-          t: PLOT_MARGINS.TOP,
-          pad: PLOT_MARGINS.PAD,
-        },
-        height: PLOT_HEIGHT,
-        font: {
-          family: PLOT_CONFIG.FONT_FAMILY,
-          size: PLOT_CONFIG.BODY_FONT_SIZE,
-          color: PLOT_CONFIG.FONT_COLOR,
-        },
-      }),
-      [selectedFile]
-    );
-
-    // Plotly configuration
-    const plotConfig: Partial<Config> = useMemo(
-      () => ({
-        responsive: true,
-        displayModeBar: true,
-        modeBarButtonsToRemove: [...PLOTLY.MODE_BAR_BUTTONS_TO_REMOVE],
-        displaylogo: false,
-      }),
-      []
-    );
-
-    // Container class name - add blur when loading
+    // Container class name
     const containerClassName = useMemo(() => {
       let className =
         'w-full h-full p-4 transition-all duration-500 rounded-lg relative ';
@@ -190,34 +237,10 @@ const HeatmapDisplay: React.FC<HeatmapDisplayProps> = React.memo(
       return className;
     }, [isAnimating, isLoading]);
 
-    // Heatmap data
-    const plotData = useMemo(() => {
-      if (!data) return [];
-
-      return [
-        {
-          z: data.z,
-          x: data.x,
-          y: data.y,
-          type: PLOTLY.HEATMAP_TYPE,
-          colorscale: PLOT_CONFIG.COLORSCALE,
-          showscale: true,
-        },
-      ];
-    }, [data]);
-
-    // Plot container style - enhanced animation effects
-    const plotContainerStyle = useMemo(
-      () => ({
-        width: '100%',
-        height: '100%',
-        transition: `all ${TRANSITION_DURATION.MEDIUM}ms cubic-bezier(0.4, 0, 0.2, 1)`,
-        filter: isAnimating || isLoading ? 'blur(6px)' : 'blur(0px)',
-        opacity: isAnimating || isLoading ? 0.6 : 1,
-        transform: isAnimating ? 'scale(0.98)' : 'scale(1)',
-      }),
-      [isAnimating, isLoading]
-    );
+    // Only show loading indicator when loading
+    if (isLoading) {
+      return <LoadingIndicator />;
+    }
 
     // Only show error display if error and not loading
     if (error && !isLoading) {
@@ -225,35 +248,38 @@ const HeatmapDisplay: React.FC<HeatmapDisplayProps> = React.memo(
     }
 
     // Only show empty state if no data and not loading
-    if (!data && !isLoading) {
+    if (!testcaseData && !isLoading) {
       return <EmptyState />;
     }
 
-    // Render the heatmap with blur effect when loading
+    // Render multiple heatmaps for the testcase
     return (
       <div className={containerClassName}>
-        {/* Enhanced background effect for animation/loading */}
-        {(isAnimating || isLoading) && (
+        {/* Enhanced background effect for animation */}
+        {isAnimating && (
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 to-transparent z-0 animate-pulse"></div>
         )}
 
-        {/* Plot area with animation */}
-        <div
-          className={`relative z-1 transition-all duration-500 ${isAnimating ? 'translate-y-1' : ''}`}
-        >
-          {data ? (
-            <Plot
-              data={plotData}
-              layout={layout}
-              config={plotConfig}
-              style={plotContainerStyle}
+        {/* Testcase title */}
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+            {selectedTestcase}
+          </h3>
+          <p className="text-sm text-gray-600">
+            {testcaseData?.heatmaps.length || 0} heatmap(s) in this testcase
+          </p>
+        </div>
+
+        {/* Heatmaps grid */}
+        <div className="space-y-6">
+          {testcaseData?.heatmaps.map((heatmap, index) => (
+            <SingleHeatmap
+              key={`${heatmap.filename}-${index}`}
+              filename={heatmap.filename}
+              data={heatmap.data}
+              isAnimating={isAnimating}
             />
-          ) : isLoading ? (
-            <div
-              className="w-full bg-gray-50"
-              style={{ height: PLOT_HEIGHT }}
-            ></div>
-          ) : null}
+          ))}
         </div>
       </div>
     );
