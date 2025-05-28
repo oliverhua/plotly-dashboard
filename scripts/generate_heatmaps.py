@@ -16,8 +16,8 @@ def create_directories():
 
 # Function to generate random heatmap data
 def generate_heatmap_data(rows=10, cols=10):
-    # Generate random data
-    z = np.random.rand(rows, cols)
+    # Generate random data in range 0-500
+    z = np.random.rand(rows, cols) * 500
     
     # Generate x and y labels
     x = [f"X{i}" for i in range(cols)]

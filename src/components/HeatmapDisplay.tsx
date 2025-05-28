@@ -189,6 +189,8 @@ const SingleHeatmap = React.memo(
           y: data.y,
           type: PLOTLY.HEATMAP_TYPE,
           colorscale: PLOT_CONFIG.COLORSCALE,
+          zmin: PLOT_CONFIG.HEATMAP_Z_MIN,
+          zmax: PLOT_CONFIG.HEATMAP_Z_MAX,
           showscale: true,
         },
       ],
