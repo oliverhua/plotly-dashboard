@@ -110,6 +110,7 @@ function App() {
       <header className={headerClassName}>
         <div className="flex items-center justify-between">
           <h1 className={titleClassName}>Heatmap Data Visualization</h1>
+          <p className="text-sm text-gray-600">Made with ❤️ by Oliver(oliverhua)</p>
         </div>
       </header>
 
