@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "format:write": "prettier --write ."
+    "format:write": "prettier --write .",
+    "generate-data": "python scripts/generate_heatmaps.py && node scripts/generate_folder_structure.js",
+    "update-structure": "node scripts/generate_folder_structure.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.6",
