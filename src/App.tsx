@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import ErrorBoundary from './components/ErrorBoundary';
 import HeatmapDisplay from './components/HeatmapDisplay';
-import Sidebar from './components/Sidebar';
+import Sidebar from './components/sidebar/Sidebar';
 import { ANIMATION_DURATION } from './constants';
 import { AnimationContext } from './contexts/AnimationContext';
 import { useHeatmapData } from './hooks/useHeatmapData';
@@ -110,7 +110,9 @@ function App() {
       <header className={headerClassName}>
         <div className="flex items-center justify-between">
           <h1 className={titleClassName}>Heatmap Data Visualization</h1>
-          <p className="text-sm text-gray-600">Made with ❤️ by Oliver(oliverhua)</p>
+          <p className="text-sm text-gray-600">
+            Made with ❤️ by Oliver(oliverhua)
+          </p>
         </div>
       </header>
 
