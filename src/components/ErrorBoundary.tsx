@@ -1,6 +1,15 @@
 import { Component } from 'react';
 import type { ErrorInfo, ReactNode } from 'react';
 
+import {
+  ACCESSIBILITY,
+  CSS_CLASSES,
+  SOMETHING_WRONG,
+  SVG_PATHS,
+  TRY_AGAIN,
+  UNEXPECTED_ERROR,
+} from '../constants';
+
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
@@ -32,29 +41,33 @@ class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="flex items-center justify-center min-h-[400px] p-8">
-          <div className="flex flex-col items-center text-center max-w-md">
-            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
+        <div className={CSS_CLASSES.STATUS_CONTAINER}>
+          <div className={CSS_CLASSES.STATUS_CONTENT}>
+            <div
+              className={`${CSS_CLASSES.STATUS_ICON} ${CSS_CLASSES.COLORS.RED.BACKGROUND} ${CSS_CLASSES.COLORS.RED.TEXT}`}
+            >
               <svg
-                className="w-8 h-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+                className={CSS_CLASSES.ICON_SIZE}
+                fill={ACCESSIBILITY.FILL}
+                stroke={ACCESSIBILITY.STROKE}
+                viewBox={ACCESSIBILITY.VIEWBOX}
+                xmlns={ACCESSIBILITY.XMLNS}
               >
                 <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                  strokeLinecap={ACCESSIBILITY.STROKE_LINECAP}
+                  strokeLinejoin={ACCESSIBILITY.STROKE_LINEJOIN}
+                  strokeWidth={ACCESSIBILITY.STROKE_WIDTH}
+                  d={SVG_PATHS.WARNING_ICON}
                 />
               </svg>
             </div>
-            <div className="text-lg font-medium text-red-600 mb-2">
-              Something went wrong
+            <div
+              className={`${CSS_CLASSES.STATUS_TITLE} ${CSS_CLASSES.COLORS.RED.TEXT}`}
+            >
+              {SOMETHING_WRONG}
             </div>
-            <div className="text-gray-600 mb-4">
-              {this.state.error?.message || 'An unexpected error occurred'}
+            <div className={`${CSS_CLASSES.STATUS_MESSAGE} mb-4`}>
+              {this.state.error?.message || UNEXPECTED_ERROR}
             </div>
             <button
               onClick={() =>
@@ -63,9 +76,9 @@ class ErrorBoundary extends Component<Props, State> {
                   error: undefined,
                 })
               }
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
+              className={`px-4 py-2 ${CSS_CLASSES.COLORS.RED.BUTTON} rounded-lg ${CSS_CLASSES.COLORS.RED.BUTTON_HOVER} ${CSS_CLASSES.TRANSITIONS.BUTTON}`}
             >
-              Try again
+              {TRY_AGAIN}
             </button>
           </div>
         </div>

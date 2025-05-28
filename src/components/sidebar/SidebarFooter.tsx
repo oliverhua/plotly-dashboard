@@ -1,5 +1,11 @@
 import React from 'react';
 
+import {
+  DISPLAY_NAMES,
+  SIDEBAR_SUBTITLE,
+  SIDEBAR_TITLE,
+} from '../../constants';
+
 import { ChartIcon } from './icons';
 
 const SidebarFooter: React.FC = React.memo(() => (
@@ -15,14 +21,14 @@ const SidebarFooter: React.FC = React.memo(() => (
 
       <div>
         <p className="text-xs">
-          <strong className="block font-medium">Heatmap Visualization</strong>
-          <span>Interactive Data Explorer</span>
+          <strong className="block font-medium">{SIDEBAR_TITLE}</strong>
+          <span>{SIDEBAR_SUBTITLE}</span>
         </p>
       </div>
     </a>
   </div>
 ));
 
-SidebarFooter.displayName = 'SidebarFooter';
+SidebarFooter.displayName = DISPLAY_NAMES.SIDEBAR_FOOTER;
 
 export default SidebarFooter;

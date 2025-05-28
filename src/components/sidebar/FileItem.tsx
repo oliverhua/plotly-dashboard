@@ -1,7 +1,7 @@
 import React, { useCallback, useContext } from 'react';
 import { Link } from 'react-router-dom';
 
-import { ANIMATION_DURATION } from '../../constants';
+import { ANIMATION_DURATION, DISPLAY_NAMES } from '../../constants';
 import { AnimationContext } from '../../contexts/AnimationContext';
 import { removeFileExtension } from '../../utils/helpers';
 
@@ -55,6 +55,6 @@ const FileItem: React.FC<FileItemProps> = React.memo(
   }
 );
 
-FileItem.displayName = 'FileItem';
+FileItem.displayName = DISPLAY_NAMES.FILE_ITEM;
 
 export default FileItem;

@@ -4,7 +4,14 @@ import { useParams } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary';
 import HeatmapDisplay from './components/HeatmapDisplay';
 import Sidebar from './components/sidebar/Sidebar';
-import { ANIMATION_DURATION } from './constants';
+import {
+  ANIMATION_DURATION,
+  APP_SUBTITLE,
+  APP_TITLE,
+  DEFAULT_CONTENT_TITLE,
+  INTERACTIVE_DESCRIPTION,
+  SELECT_INSTRUCTION,
+} from './constants';
 import { AnimationContext } from './contexts/AnimationContext';
 import { useHeatmapData } from './hooks/useHeatmapData';
 import { formatFolderName, removeFileExtension } from './utils/helpers';
@@ -109,10 +116,8 @@ function App() {
     <div className="flex flex-col h-screen bg-white">
       <header className={headerClassName}>
         <div className="flex items-center justify-between">
-          <h1 className={titleClassName}>Heatmap Data Visualization</h1>
-          <p className="text-sm text-gray-600">
-            Made with ❤️ by Oliver(oliverhua)
-          </p>
+          <h1 className={titleClassName}>{APP_TITLE}</h1>
+          <p className="text-sm text-gray-600">{APP_SUBTITLE}</p>
         </div>
       </header>
 
@@ -135,12 +140,12 @@ function App() {
                   <h2 className={contentTitleClassName}>
                     {selectedFolder && selectedFile
                       ? `${formatFolderName(selectedFolder)} - ${removeFileExtension(selectedFile)}`
-                      : 'Heatmap Visualization'}
+                      : DEFAULT_CONTENT_TITLE}
                   </h2>
                   <p className="text-sm text-gray-500 mt-1">
                     {selectedFolder && selectedFile
-                      ? 'Interactive heatmap visualization'
-                      : 'Select a folder and file from the sidebar to view heatmap data'}
+                      ? INTERACTIVE_DESCRIPTION
+                      : SELECT_INSTRUCTION}
                   </p>
                 </div>
 

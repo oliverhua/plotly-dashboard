@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 
+import { DISPLAY_NAMES } from '../../constants';
 import { formatFolderName, sortFilesByNumber } from '../../utils/helpers';
 
 import FileItem from './FileItem';
@@ -64,6 +65,6 @@ const FolderItem: React.FC<FolderItemProps> = React.memo(
   }
 );
 
-FolderItem.displayName = 'FolderItem';
+FolderItem.displayName = DISPLAY_NAMES.FOLDER_ITEM;
 
 export default FolderItem;

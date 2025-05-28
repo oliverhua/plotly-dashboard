@@ -4,10 +4,20 @@ import Plot from 'react-plotly.js';
 import type { Config, Layout } from 'plotly.js';
 
 import {
+  ACCESSIBILITY,
+  CSS_CLASSES,
+  DISPLAY_NAMES,
+  ERROR_TITLE,
   JSON_EXTENSION,
+  LOADING_MESSAGE,
+  LOADING_TITLE,
+  NO_DATA_MESSAGE,
+  NO_DATA_TITLE,
+  PLOTLY,
   PLOT_CONFIG,
   PLOT_HEIGHT,
   PLOT_MARGINS,
+  SVG_PATHS,
   TRANSITION_DURATION,
 } from '../constants';
 import { AnimationContext } from '../contexts/AnimationContext';
@@ -54,73 +64,71 @@ StatusDisplay.displayName = 'StatusDisplay';
 // Loading indicator
 const LoadingIndicator = React.memo(() => (
   <StatusDisplay
-    icon={
-      <div className="w-12 h-12 rounded-full border-4 border-blue-500 border-t-transparent animate-spin"></div>
-    }
-    title="Loading Data"
-    message="Please wait while we fetch the heatmap data..."
+    icon={<div className={CSS_CLASSES.LOADING_SPINNER}></div>}
+    title={LOADING_TITLE}
+    message={LOADING_MESSAGE}
     bgColor="bg-transparent"
-    textColor="text-blue-500"
+    textColor={CSS_CLASSES.COLORS.BLUE.TEXT}
   />
 ));
 
-LoadingIndicator.displayName = 'LoadingIndicator';
+LoadingIndicator.displayName = DISPLAY_NAMES.LOADING_INDICATOR;
 
 // Error display
 const ErrorDisplay = React.memo(({ message }: { message: string }) => (
   <StatusDisplay
     icon={
       <svg
-        className="w-8 h-8"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
+        className={CSS_CLASSES.ICON_SIZE}
+        fill={ACCESSIBILITY.FILL}
+        stroke={ACCESSIBILITY.STROKE}
+        viewBox={ACCESSIBILITY.VIEWBOX}
+        xmlns={ACCESSIBILITY.XMLNS}
       >
         <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          strokeLinecap={ACCESSIBILITY.STROKE_LINECAP}
+          strokeLinejoin={ACCESSIBILITY.STROKE_LINEJOIN}
+          strokeWidth={ACCESSIBILITY.STROKE_WIDTH}
+          d={SVG_PATHS.ERROR_ICON}
         ></path>
       </svg>
     }
-    title="Error Loading Data"
+    title={ERROR_TITLE}
     message={message}
-    bgColor="bg-red-100"
-    textColor="text-red-600"
+    bgColor={CSS_CLASSES.COLORS.RED.BACKGROUND}
+    textColor={CSS_CLASSES.COLORS.RED.TEXT}
   />
 ));
 
-ErrorDisplay.displayName = 'ErrorDisplay';
+ErrorDisplay.displayName = DISPLAY_NAMES.ERROR_DISPLAY;
 
 // Empty state
 const EmptyState = React.memo(() => (
   <StatusDisplay
     icon={
       <svg
-        className="w-8 h-8"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
+        className={CSS_CLASSES.ICON_SIZE}
+        fill={ACCESSIBILITY.FILL}
+        stroke={ACCESSIBILITY.STROKE}
+        viewBox={ACCESSIBILITY.VIEWBOX}
+        xmlns={ACCESSIBILITY.XMLNS}
       >
         <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          strokeLinecap={ACCESSIBILITY.STROKE_LINECAP}
+          strokeLinejoin={ACCESSIBILITY.STROKE_LINEJOIN}
+          strokeWidth={ACCESSIBILITY.STROKE_WIDTH}
+          d={SVG_PATHS.INFO_ICON}
         ></path>
       </svg>
     }
-    title="No Data Selected"
-    message="Please select a folder and file from the sidebar to view a heatmap."
-    bgColor="bg-blue-100"
-    textColor="text-blue-500"
+    title={NO_DATA_TITLE}
+    message={NO_DATA_MESSAGE}
+    bgColor={CSS_CLASSES.COLORS.BLUE.BACKGROUND}
+    textColor={CSS_CLASSES.COLORS.BLUE.TEXT}
   />
 ));
 
-EmptyState.displayName = 'EmptyState';
+EmptyState.displayName = DISPLAY_NAMES.EMPTY_STATE;
 
 // The main heatmap display component
 const HeatmapDisplay: React.FC<HeatmapDisplayProps> = React.memo(
@@ -162,7 +170,7 @@ const HeatmapDisplay: React.FC<HeatmapDisplayProps> = React.memo(
       () => ({
         responsive: true,
         displayModeBar: true,
-        modeBarButtonsToRemove: ['lasso2d', 'select2d'],
+        modeBarButtonsToRemove: [...PLOTLY.MODE_BAR_BUTTONS_TO_REMOVE],
         displaylogo: false,
       }),
       []
@@ -191,7 +199,7 @@ const HeatmapDisplay: React.FC<HeatmapDisplayProps> = React.memo(
           z: data.z,
           x: data.x,
           y: data.y,
-          type: 'heatmap' as const,
+          type: PLOTLY.HEATMAP_TYPE,
           colorscale: PLOT_CONFIG.COLORSCALE,
           showscale: true,
         },
@@ -252,6 +260,6 @@ const HeatmapDisplay: React.FC<HeatmapDisplayProps> = React.memo(
   }
 );
 
-HeatmapDisplay.displayName = 'HeatmapDisplay';
+HeatmapDisplay.displayName = DISPLAY_NAMES.HEATMAP_DISPLAY;
 
 export default HeatmapDisplay;

@@ -43,3 +43,6 @@ export const ERROR_MESSAGES = {
   HTML_CONTENT: (status: number) =>
     `Received HTML instead of JSON. Status: ${status}`,
 } as const;
+
+// Re-export UI strings for centralized access
+export * from './strings';
