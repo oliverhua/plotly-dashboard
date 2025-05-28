@@ -131,88 +131,97 @@ const EmptyState = React.memo(() => (
 EmptyState.displayName = DISPLAY_NAMES.EMPTY_STATE;
 
 // Individual heatmap component
-const SingleHeatmap = React.memo(({ filename, data, isAnimating }: {
-  filename: string;
-  data: { z: number[][]; x: string[]; y: string[] };
-  isAnimating: boolean;
-}) => {
-  // Layout configuration for individual heatmap
-  const layout: Partial<Layout> = useMemo(
-    () => ({
-      title: {
-        text: filename.replace(JSON_EXTENSION, ''),
+const SingleHeatmap = React.memo(
+  ({
+    filename,
+    data,
+    isAnimating,
+  }: {
+    filename: string;
+    data: { z: number[][]; x: string[]; y: string[] };
+    isAnimating: boolean;
+  }) => {
+    // Layout configuration for individual heatmap
+    const layout: Partial<Layout> = useMemo(
+      () => ({
+        title: {
+          text: filename.replace(JSON_EXTENSION, ''),
+          font: {
+            family: PLOT_CONFIG.FONT_FAMILY,
+            size: PLOT_CONFIG.TITLE_FONT_SIZE,
+          },
+        },
+        autosize: true,
+        margin: {
+          l: PLOT_MARGINS.LEFT,
+          r: PLOT_MARGINS.RIGHT,
+          b: PLOT_MARGINS.BOTTOM,
+          t: PLOT_MARGINS.TOP,
+          pad: PLOT_MARGINS.PAD,
+        },
+        height: PLOT_HEIGHT,
         font: {
           family: PLOT_CONFIG.FONT_FAMILY,
-          size: PLOT_CONFIG.TITLE_FONT_SIZE,
+          size: PLOT_CONFIG.BODY_FONT_SIZE,
+          color: PLOT_CONFIG.FONT_COLOR,
         },
-      },
-      autosize: true,
-      margin: {
-        l: PLOT_MARGINS.LEFT,
-        r: PLOT_MARGINS.RIGHT,
-        b: PLOT_MARGINS.BOTTOM,
-        t: PLOT_MARGINS.TOP,
-        pad: PLOT_MARGINS.PAD,
-      },
-      height: PLOT_HEIGHT,
-      font: {
-        family: PLOT_CONFIG.FONT_FAMILY,
-        size: PLOT_CONFIG.BODY_FONT_SIZE,
-        color: PLOT_CONFIG.FONT_COLOR,
-      },
-    }),
-    [filename]
-  );
+      }),
+      [filename]
+    );
 
-  // Plotly configuration
-  const plotConfig: Partial<Config> = useMemo(
-    () => ({
-      responsive: true,
-      displayModeBar: true,
-      modeBarButtonsToRemove: [...PLOTLY.MODE_BAR_BUTTONS_TO_REMOVE],
-      displaylogo: false,
-    }),
-    []
-  );
+    // Plotly configuration
+    const plotConfig: Partial<Config> = useMemo(
+      () => ({
+        responsive: true,
+        displayModeBar: true,
+        modeBarButtonsToRemove: [...PLOTLY.MODE_BAR_BUTTONS_TO_REMOVE],
+        displaylogo: false,
+      }),
+      []
+    );
 
-  // Heatmap data
-  const plotData = useMemo(() => [
-    {
-      z: data.z,
-      x: data.x,
-      y: data.y,
-      type: PLOTLY.HEATMAP_TYPE,
-      colorscale: PLOT_CONFIG.COLORSCALE,
-      showscale: true,
-    },
-  ], [data]);
+    // Heatmap data
+    const plotData = useMemo(
+      () => [
+        {
+          z: data.z,
+          x: data.x,
+          y: data.y,
+          type: PLOTLY.HEATMAP_TYPE,
+          colorscale: PLOT_CONFIG.COLORSCALE,
+          showscale: true,
+        },
+      ],
+      [data]
+    );
 
-  // Plot container style
-  const plotContainerStyle = useMemo(
-    () => ({
-      width: '100%',
-      height: '100%',
-      transition: `all ${TRANSITION_DURATION.MEDIUM}ms cubic-bezier(0.4, 0, 0.2, 1)`,
-      filter: isAnimating ? 'blur(2px)' : 'blur(0px)',
-      opacity: isAnimating ? 0.8 : 1,
-      transform: isAnimating ? 'scale(0.99)' : 'scale(1)',
-    }),
-    [isAnimating]
-  );
+    // Plot container style
+    const plotContainerStyle = useMemo(
+      () => ({
+        width: '100%',
+        height: '100%',
+        transition: `all ${TRANSITION_DURATION.MEDIUM}ms cubic-bezier(0.4, 0, 0.2, 1)`,
+        filter: isAnimating ? 'blur(2px)' : 'blur(0px)',
+        opacity: isAnimating ? 0.8 : 1,
+        transform: isAnimating ? 'scale(0.99)' : 'scale(1)',
+      }),
+      [isAnimating]
+    );
 
-  return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden mb-6">
-      <div className="p-4">
-        <Plot
-          data={plotData}
-          layout={layout}
-          config={plotConfig}
-          style={plotContainerStyle}
-        />
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden mb-6">
+        <div className="p-4">
+          <Plot
+            data={plotData}
+            layout={layout}
+            config={plotConfig}
+            style={plotContainerStyle}
+          />
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 SingleHeatmap.displayName = 'SingleHeatmap';
 

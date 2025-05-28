@@ -5,12 +5,134 @@ A modern, optimized React application for visualizing heatmap data using Plotly.
 ## 🚀 Features
 
 - **Interactive Heatmap Visualization**: Dynamic heatmap rendering with Plotly.js
-- **File Explorer**: Sidebar navigation for browsing data folders and files
+- **Hierarchical Data Structure**: Organized by folders and testcases for better data management
+- **Multiple Heatmaps per Testcase**: Display all heatmaps from a testcase on a single page
+- **File Explorer**: Sidebar navigation for browsing data folders and testcases
 - **Smooth Animations**: Context-based animation system with visual feedback
 - **Error Handling**: Comprehensive error boundaries and user-friendly error states
 - **Performance Optimized**: Memoized components, request deduplication, and caching
 - **Type Safe**: Full TypeScript support with strict type checking
 - **Modern UI**: Tailwind CSS with responsive design and accessibility features
+
+## 📁 Data Structure (IMPORTANT!)
+
+### New Hierarchical Structure
+
+The application now uses a **hierarchical data structure** with testcases:
+
+```
+public/data/
+├── DVFS_Latency/
+│   ├── testcaseA/
+│   │   ├── SSWRP1.json
+│   │   ├── SSWRP2.json
+│   │   └── SSWRP3.json
+│   ├── testcaseB/
+│   │   ├── SSWRP4.json
+│   │   ├── SSWRP5.json
+│   │   ├── SSWRP6.json
+│   │   └── SSWRP7.json
+│   └── testcaseC/
+│       ├── SSWRP8.json
+│       └── SSWRP9.json
+└── Power_On_Latency/
+    ├── testcaseA/
+    │   ├── SSWRP1.json
+    │   ├── SSWRP2.json
+    │   └── SSWRP3.json
+    └── testcaseB/
+        ├── SSWRP4.json
+        ├── SSWRP5.json
+        ├── SSWRP6.json
+        └── SSWRP7.json
+```
+
+### Key Changes from Previous Version
+
+- **Testcase Organization**: Each folder now contains testcase subdirectories
+- **Multiple Heatmaps**: Each testcase displays all its JSON files as separate heatmaps on one page
+- **URL Structure**: Changed from `/:folder/:file` to `/:folder/:testcase`
+
+## 🛠️ Development
+
+### Prerequisites
+
+- Node.js 18+
+- Python 3.x (for data generation)
+- Yarn package manager
+
+### Installation
+
+```bash
+yarn install
+```
+
+### **IMPORTANT: Data Generation & Setup**
+
+After pulling the project or setting up on a new machine:
+
+1. **Generate fake data and update folder structure**:
+
+   ```bash
+   npm run generate-data
+   ```
+
+   This will:
+
+   - Generate fake heatmap data in the correct hierarchical structure
+   - Automatically update `src/utils/folderStructure.ts` to match the actual data structure
+
+2. **Or run commands separately**:
+
+   ```bash
+   # Generate fake data
+   python scripts/generate_heatmaps.py
+
+   # Update folder structure
+   npm run update-structure
+   ```
+
+### Available Scripts
+
+```bash
+# Development server
+npm run dev
+
+# Generate fake data + update folder structure
+npm run generate-data
+
+# Update folder structure only (after manual data changes)
+npm run update-structure
+
+# Build for production (includes folder structure update)
+npm run build
+
+# Linting
+npm run lint
+
+# Preview production build
+npm run preview
+```
+
+### Development Server
+
+```bash
+npm run dev
+```
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+## 📋 Setup Checklist for New Machines
+
+1. ✅ Clone the repository
+2. ✅ Run `npm install`
+3. ✅ **Run `npm run generate-data`** (CRITICAL - generates data and updates folder structure)
+4. ✅ Run `npm run dev`
+5. ✅ Verify the sidebar shows the hierarchical structure with testcases
 
 ## 🏗️ Architecture & Optimizations
 
@@ -20,20 +142,27 @@ A modern, optimized React application for visualizing heatmap data using Plotly.
 src/
 ├── components/          # React components
 │   ├── ErrorBoundary.tsx    # Error boundary for graceful error handling
-│   ├── HeatmapDisplay.tsx   # Main heatmap visualization component
-│   └── Sidebar.tsx          # Navigation sidebar component
+│   ├── HeatmapDisplay.tsx   # Main heatmap visualization component (supports multiple heatmaps)
+│   └── sidebar/             # Sidebar components
+│       ├── Sidebar.tsx          # Main sidebar component
+│       ├── FolderItem.tsx       # Folder navigation item
+│       ├── TestcaseItem.tsx     # Testcase navigation item (NEW)
+│       └── types.ts             # Sidebar type definitions
 ├── contexts/           # React contexts
 │   └── AnimationContext.tsx # Animation state management
 ├── hooks/              # Custom React hooks
-│   ├── useHeatmapData.ts    # Data fetching and state management
+│   ├── useHeatmapData.ts    # Data fetching and state management (updated for testcases)
 │   └── usePerformanceMonitor.ts # Performance monitoring (dev only)
 ├── utils/              # Utility functions
-│   ├── dataUtils.ts         # Data fetching utilities
+│   ├── dataUtils.ts         # Data fetching utilities (supports testcase data)
 │   ├── helpers.ts           # Common helper functions
-│   ├── requestManager.ts    # Request caching and deduplication
-│   └── folderStructure.ts   # Auto-generated folder structure
-└── constants/          # Application constants
-    └── index.ts             # Centralized configuration
+│   ├── requestManager.ts    # Request caching and deduplication (supports concurrent requests)
+│   └── folderStructure.ts   # Auto-generated folder structure (HIERARCHICAL)
+├── constants/          # Application constants
+│   └── strings.ts           # Centralized configuration
+└── scripts/            # Build and data generation scripts
+    ├── generate_heatmaps.py        # Generates fake heatmap data
+    └── generate_folder_structure.js # Updates folderStructure.ts
 ```
 
 ### Performance Optimizations
@@ -41,8 +170,9 @@ src/
 1. **Request Management**
 
    - Global singleton request manager
+   - **Concurrent request support** (fixed from previous version)
    - Request deduplication and caching
-   - Automatic request cancellation
+   - Automatic request cancellation for navigation
    - Error handling with retry logic
 
 2. **React Optimizations**
@@ -73,58 +203,7 @@ src/
 - **Consistent Styling**: Centralized constants for animations, colors, and spacing
 - **Helper Functions**: Reusable utilities for common operations
 
-## 🛠️ Development
-
-### Prerequisites
-
-- Node.js 18+
-- Yarn package manager
-
-### Installation
-
-```bash
-   yarn install
-```
-
-### Development Server
-
-```bash
-   yarn dev
-```
-
-### Build for Production
-
-```bash
-yarn build
-```
-
-### Linting
-
-```bash
-yarn lint
-```
-
-### Preview Production Build
-
-```bash
-yarn preview
-```
-
-## 📁 Data Structure
-
-The application expects data files in the following structure:
-
-```
-public/data/
-├── folder1/
-│   ├── sample1.json
-│   ├── sample2.json
-│   └── ...
-├── folder2/
-│   ├── sample1.json
-│   └── ...
-└── ...
-```
+## 📊 Data Format
 
 Each JSON file should contain heatmap data in the format:
 
@@ -144,7 +223,7 @@ Each JSON file should contain heatmap data in the format:
 
 ### Constants
 
-All application constants are centralized in `src/constants/index.ts`:
+All application constants are centralized in `src/constants/strings.ts`:
 
 - Animation durations
 - Plot configuration
@@ -167,6 +246,28 @@ In development mode, the application includes performance monitoring that logs:
 
 The application is configured for deployment to GitHub Pages with the base path `/plotly-dashboard/`. Update the `base` property in `vite.config.ts` for different deployment targets.
 
+## ⚠️ Troubleshooting
+
+### Common Issues
+
+1. **Empty or incorrect sidebar structure**:
+
+   - Run `npm run update-structure` to regenerate `folderStructure.ts`
+
+2. **Data loading errors**:
+
+   - Ensure data files exist in the correct hierarchical structure
+   - Run `npm run generate-data` to create sample data
+
+3. **TypeScript errors after pulling**:
+   - Run `npm run update-structure` to update type definitions
+
+### Debug Steps
+
+1. Check if `public/data/` has the correct structure
+2. Verify `src/utils/folderStructure.ts` matches the actual data structure
+3. Run `npm run generate-data` to reset everything
+
 ## 📈 Performance Metrics
 
 - **Bundle Size**: Optimized with vendor chunk splitting
@@ -181,6 +282,7 @@ The application is configured for deployment to GitHub Pages with the base path 
 3. Add appropriate error handling for new features
 4. Update tests and documentation as needed
 5. Run linting before submitting changes
+6. **Always run `npm run update-structure` after modifying data structure**
 
 ## 📄 License
 

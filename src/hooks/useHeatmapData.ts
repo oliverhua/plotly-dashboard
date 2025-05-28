@@ -111,7 +111,8 @@ export const useHeatmapData = (
     if (isStructureLoaded && initialFolder && initialTestcase) {
       // Only update if the URL parameters are different from current state
       const isNewSelection =
-        initialFolder !== selectedFolder || initialTestcase !== selectedTestcase;
+        initialFolder !== selectedFolder ||
+        initialTestcase !== selectedTestcase;
 
       // Only proceed if it's actually a new selection
       if (isNewSelection) {

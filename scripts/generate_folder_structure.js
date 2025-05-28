@@ -17,11 +17,14 @@ function generateFolderStructure() {
   for (const folder of folders) {
     const folderPath = path.join(dataDir, folder);
     folderStructure[folder] = {};
-    
+
     // 檢查是否有子目錄（testcase）
     const items = fs.readdirSync(folderPath, { withFileTypes: true });
-    const subdirs = items.filter(dirent => dirent.isDirectory()).map(dirent => dirent.name).sort();
-    
+    const subdirs = items
+      .filter(dirent => dirent.isDirectory())
+      .map(dirent => dirent.name)
+      .sort();
+
     if (subdirs.length > 0) {
       // 有子目錄的情況（新的層次結構）
       for (const testcase of subdirs) {
@@ -39,14 +42,16 @@ function generateFolderStructure() {
     } else {
       // 沒有子目錄的情況（舊的平面結構，向後兼容）
       const files = items
-        .filter(dirent => dirent.isFile() && path.extname(dirent.name) === '.json')
+        .filter(
+          dirent => dirent.isFile() && path.extname(dirent.name) === '.json'
+        )
         .map(dirent => dirent.name)
         .sort((a, b) => {
           const numA = parseInt(a.match(/\d+/)?.[0] || '0');
           const numB = parseInt(b.match(/\d+/)?.[0] || '0');
           return numA - numB;
         });
-      
+
       // 為了向後兼容，將文件放在一個默認的testcase中
       if (files.length > 0) {
         folderStructure[folder]['default'] = files;

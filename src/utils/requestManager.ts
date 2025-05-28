@@ -103,7 +103,7 @@ class RequestManager {
    * Cancel all ongoing requests
    */
   public cancelAllRequests(): void {
-    for (const [cacheKey, controller] of this.activeControllers) {
+    for (const [, controller] of this.activeControllers) {
       controller.abort();
     }
     this.activeControllers.clear();

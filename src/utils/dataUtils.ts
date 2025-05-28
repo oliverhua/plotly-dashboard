@@ -82,22 +82,22 @@ export const fetchTestcaseData = async (
 
   const structure = await fetchFolderStructure();
   const files = structure[folder]?.[testcase];
-  
+
   if (!files || files.length === 0) {
     throw new Error(`No files found for ${folder}/${testcase}`);
   }
 
   try {
     // Fetch all heatmap data for this testcase
-    const heatmapPromises = files.map(async (file) => {
+    const heatmapPromises = files.map(async file => {
       const baseUrl = import.meta.env.BASE_URL || '/plotly-dashboard/';
       const dataPath = `${baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'}data/${folder}/${testcase}/${file}`;
       const cacheKey = createCacheKey(folder, `${testcase}/${file}`);
-      
+
       const data = await requestManager.fetchData(dataPath, cacheKey);
       return {
         filename: file,
-        data: data as HeatmapData
+        data: data as HeatmapData,
       };
     });
 
@@ -105,10 +105,13 @@ export const fetchTestcaseData = async (
 
     return {
       testcase,
-      heatmaps
+      heatmaps,
     };
   } catch (error) {
-    console.error(`Failed to fetch testcase data for ${folder}/${testcase}:`, error);
+    console.error(
+      `Failed to fetch testcase data for ${folder}/${testcase}:`,
+      error
+    );
     throw new Error(ERROR_MESSAGES.LOAD_HEATMAP);
   }
 };

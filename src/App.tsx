@@ -37,7 +37,9 @@ function App() {
 
   // 添加動畫狀態
   const [isAnimating, setIsAnimating] = useState(false);
-  const [lastSelectedTestcase, setLastSelectedTestcase] = useState<string | null>(null);
+  const [lastSelectedTestcase, setLastSelectedTestcase] = useState<
+    string | null
+  >(null);
 
   // 添加頁面標題動畫效果
   const [titleClass, setTitleClass] = useState('');
