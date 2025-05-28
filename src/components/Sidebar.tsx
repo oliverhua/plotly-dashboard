@@ -61,7 +61,7 @@ const FileItem: React.FC<{
         to={linkTo}
         className={`block rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 ${
           isSelected
-            ? 'bg-gray-100 text-gray-700 scale-105 shadow-sm'
+            ? 'bg-blue-100 text-blue-700 scale-105 shadow-sm'
             : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
         }`}
         onClick={handleClick}
