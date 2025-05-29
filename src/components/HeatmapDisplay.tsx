@@ -197,16 +197,46 @@ const SingleHeatmap = React.memo(
         })
       );
 
+      // Create text data for displaying values on each cell
+      const textData = data.z.map((row, rowIndex) =>
+        row.map((value, colIndex) => {
+          // If this is a diagonal element (x = y), show empty string
+          if (rowIndex === colIndex) {
+            return '';
+          }
+          // Round the value to 1 decimal place for cleaner display
+          return (Math.round(value * 10) / 10).toString();
+        })
+      );
+
+      // Generate numbered labels starting from 1
+      const numRows = data.z.length;
+      const numCols = data.z[0]?.length || 0;
+      
+      // Create x-axis labels: 1, 2, 3, ..., numCols
+      const xLabels = Array.from({ length: numCols }, (_, i) => (i + 1).toString());
+      
+      // Create y-axis labels: 1, 2, 3, ..., numRows
+      const yLabels = Array.from({ length: numRows }, (_, i) => (i + 1).toString());
+
       return [
         {
           z: processedZ,
-          x: data.x,
-          y: data.y,
+          x: xLabels,
+          y: yLabels,
           type: PLOTLY.HEATMAP_TYPE,
           colorscale: PLOT_CONFIG.COLORSCALE as any,
           zmin: PLOT_CONFIG.HEATMAP_Z_MIN,
           zmax: PLOT_CONFIG.HEATMAP_Z_MAX,
           showscale: true,
+          // Add text annotations to show values on each cell
+          text: textData as any,
+          texttemplate: '%{text}',
+          textfont: {
+            color: 'white',
+            size: 12,
+            family: PLOT_CONFIG.FONT_FAMILY,
+          },
           // Configure how null values are displayed
           hovertemplate:
             '<b>%{x}</b><br><b>%{y}</b><br>Value: %{z}<extra></extra>',
