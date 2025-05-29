@@ -19,11 +19,11 @@ export const TRANSITION_DURATION = {
 // Custom color scales
 export const CUSTOM_COLOR_SCALES = {
   TEMPS: [
-    ['0.0', 'rgb(0,147,156)'],
-    ['0.25', 'rgb(60,174,163)'],
-    ['0.5', 'rgb(246,213,92)'],
-    ['0.75', 'rgb(237,85,59)'],
-    ['1.0', 'rgb(164,14,76)'],
+    ['0.0', '#009392'],
+    ['0.25', '#65BD85'],
+    ['0.5', '#E2E09A'],
+    ['0.75', '#EB9C75'],
+    ['1.0', '#CF597E'],
   ],
 } as const;
 
