@@ -186,38 +186,36 @@ const SingleHeatmap = React.memo(
     );
 
     // Heatmap data
-    const plotData = useMemo(
-      () => {
-        // Process the data to set diagonal elements to null (where x = y)
-        const processedZ = data.z.map((row, rowIndex) =>
-          row.map((value, colIndex) => {
-            // If this is a diagonal element (x = y), return null
-            if (rowIndex === colIndex) {
-              return null;
-            }
-            return value;
-          })
-        );
+    const plotData = useMemo(() => {
+      // Process the data to set diagonal elements to null (where x = y)
+      const processedZ = data.z.map((row, rowIndex) =>
+        row.map((value, colIndex) => {
+          // If this is a diagonal element (x = y), return null
+          if (rowIndex === colIndex) {
+            return null;
+          }
+          return value;
+        })
+      );
 
-        return [
-          {
-            z: processedZ,
-            x: data.x,
-            y: data.y,
-            type: PLOTLY.HEATMAP_TYPE,
-            colorscale: PLOT_CONFIG.COLORSCALE as any,
-            zmin: PLOT_CONFIG.HEATMAP_Z_MIN,
-            zmax: PLOT_CONFIG.HEATMAP_Z_MAX,
-            showscale: true,
-            // Configure how null values are displayed
-            hovertemplate: '<b>%{x}</b><br><b>%{y}</b><br>Value: %{z}<extra></extra>',
-            // Handle null values by setting them to a specific color
-            zmid: null, // Let Plotly handle the middle value automatically
-          },
-        ];
-      },
-      [data]
-    );
+      return [
+        {
+          z: processedZ,
+          x: data.x,
+          y: data.y,
+          type: PLOTLY.HEATMAP_TYPE,
+          colorscale: PLOT_CONFIG.COLORSCALE as any,
+          zmin: PLOT_CONFIG.HEATMAP_Z_MIN,
+          zmax: PLOT_CONFIG.HEATMAP_Z_MAX,
+          showscale: true,
+          // Configure how null values are displayed
+          hovertemplate:
+            '<b>%{x}</b><br><b>%{y}</b><br>Value: %{z}<extra></extra>',
+          // Handle null values by setting them to a specific color
+          zmid: null, // Let Plotly handle the middle value automatically
+        },
+      ];
+    }, [data]);
 
     // Plot container style
     const plotContainerStyle = useMemo(
