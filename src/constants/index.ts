@@ -17,7 +17,7 @@ export const TRANSITION_DURATION = {
 } as const;
 
 // Custom color scales
-export const CUSTOM_COLOR_SCALES = {
+export const CUSTOM_COLOR_SCALES: { [key: string]: [number | string, string][] } = {
   TEMPS: [
     ['0.0', '#009392'],
     ['0.25', '#65BD85'],
@@ -25,7 +25,7 @@ export const CUSTOM_COLOR_SCALES = {
     ['0.75', '#EB9C75'],
     ['1.0', '#CF597E'],
   ],
-} as const;
+};
 
 // Plot configuration
 export const PLOT_CONFIG = {

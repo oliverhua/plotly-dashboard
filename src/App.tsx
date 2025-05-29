@@ -1,11 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import ErrorBoundary from './components/ErrorBoundary';
 import HeatmapDisplay from './components/HeatmapDisplay';
 import Sidebar from './components/sidebar/Sidebar';
 import {
-  ANIMATION_DURATION,
   APP_SUBTITLE,
   APP_TITLE,
   DEFAULT_CONTENT_TITLE,
