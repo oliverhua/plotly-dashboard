@@ -74,7 +74,7 @@ After pulling the project or setting up on a new machine:
 1. **Generate fake data and update folder structure**:
 
    ```bash
-   npm run generate-data
+   yarn generate-data
    ```
 
    This will:
@@ -89,49 +89,49 @@ After pulling the project or setting up on a new machine:
    python scripts/generate_heatmaps.py
 
    # Update folder structure
-   npm run update-structure
+   yarn update-structure
    ```
 
 ### Available Scripts
 
 ```bash
 # Development server
-npm run dev
+yarn dev
 
 # Generate fake data + update folder structure
-npm run generate-data
+yarn generate-data
 
 # Update folder structure only (after manual data changes)
-npm run update-structure
+yarn update-structure
 
 # Build for production (includes folder structure update)
-npm run build
+yarn build
 
 # Linting
-npm run lint
+yarn lint
 
 # Preview production build
-npm run preview
+yarn preview
 ```
 
 ### Development Server
 
 ```bash
-npm run dev
+yarn dev
 ```
 
 ### Build for Production
 
 ```bash
-npm run build
+yarn build
 ```
 
 ## 📋 Setup Checklist for New Machines
 
 1. ✅ Clone the repository
 2. ✅ Run `npm install`
-3. ✅ **Run `npm run generate-data`** (CRITICAL - generates data and updates folder structure)
-4. ✅ Run `npm run dev`
+3. ✅ **Run `yarn generate-data`** (CRITICAL - generates data and updates folder structure)
+4. ✅ Run `yarn dev`
 5. ✅ Verify the sidebar shows the hierarchical structure with testcases
 
 ## 🏗️ Architecture & Optimizations
@@ -252,21 +252,21 @@ The application is configured for deployment to GitHub Pages with the base path 
 
 1. **Empty or incorrect sidebar structure**:
 
-   - Run `npm run update-structure` to regenerate `folderStructure.ts`
+   - Run `yarn update-structure` to regenerate `folderStructure.ts`
 
 2. **Data loading errors**:
 
    - Ensure data files exist in the correct hierarchical structure
-   - Run `npm run generate-data` to create sample data
+   - Run `yarn generate-data` to create sample data
 
 3. **TypeScript errors after pulling**:
-   - Run `npm run update-structure` to update type definitions
+   - Run `yarn update-structure` to update type definitions
 
 ### Debug Steps
 
 1. Check if `public/data/` has the correct structure
 2. Verify `src/utils/folderStructure.ts` matches the actual data structure
-3. Run `npm run generate-data` to reset everything
+3. Run `yarn generate-data` to reset everything
 
 ## 📈 Performance Metrics
 
@@ -282,7 +282,7 @@ The application is configured for deployment to GitHub Pages with the base path 
 3. Add appropriate error handling for new features
 4. Update tests and documentation as needed
 5. Run linting before submitting changes
-6. **Always run `npm run update-structure` after modifying data structure**
+6. **Always run `yarn update-structure` after modifying data structure**
 
 ## 📄 License
 
