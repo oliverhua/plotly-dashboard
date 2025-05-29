@@ -229,12 +229,12 @@ const SingleHeatmap = React.memo(
           x: xLabels,
           y: yLabels,
           type: PLOTLY.HEATMAP_TYPE,
-          colorscale: PLOT_CONFIG.COLORSCALE as any,
+          colorscale: PLOT_CONFIG.COLORSCALE as unknown as string,
           zmin: PLOT_CONFIG.HEATMAP_Z_MIN,
           zmax: PLOT_CONFIG.HEATMAP_Z_MAX,
           showscale: true,
           // Add text annotations to show values on each cell
-          text: textData as any,
+          text: textData as unknown as string,
           texttemplate: '%{text}',
           textfont: {
             color: 'white',
