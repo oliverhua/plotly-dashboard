@@ -19,16 +19,11 @@ export const TRANSITION_DURATION = {
 // Custom color scales
 export const CUSTOM_COLOR_SCALES = {
   TEMPS: [
-    ['0.0', 'rgb(49,54,149)'],
-    ['0.111111111111', 'rgb(69,117,180)'],
-    ['0.222222222222', 'rgb(116,173,209)'],
-    ['0.333333333333', 'rgb(171,217,233)'],
-    ['0.444444444444', 'rgb(224,243,248)'],
-    ['0.555555555556', 'rgb(254,224,144)'],
-    ['0.666666666667', 'rgb(253,174,97)'],
-    ['0.777777777778', 'rgb(244,109,67)'],
-    ['0.888888888889', 'rgb(215,48,39)'],
-    ['1.0', 'rgb(165,0,38)'],
+    ['0.0', 'rgb(0,147,156)'],
+    ['0.25', 'rgb(60,174,163)'],
+    ['0.5', 'rgb(246,213,92)'],
+    ['0.75', 'rgb(237,85,59)'],
+    ['1.0', 'rgb(164,14,76)'],
   ],
 } as const;
 
@@ -36,7 +31,7 @@ export const CUSTOM_COLOR_SCALES = {
 export const PLOT_CONFIG = {
   COLORSCALE: CUSTOM_COLOR_SCALES.TEMPS, // Custom Temps diverging colorscale
   HEATMAP_Z_MIN: 0,
-  HEATMAP_Z_MAX: 500,
+  HEATMAP_Z_MAX: 200,
   FONT_FAMILY: 'system-ui, -apple-system, sans-serif',
   TITLE_FONT_SIZE: 18,
   BODY_FONT_SIZE: 12,
