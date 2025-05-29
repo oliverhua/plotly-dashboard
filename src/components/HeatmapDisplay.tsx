@@ -169,6 +169,12 @@ const SingleHeatmap = React.memo(
           x: 1,
           y: 1,
         },
+        yaxis: {
+          autorange: 'reversed',
+        },
+        xaxis: {
+          side: 'top',
+        },
       }),
       [filename]
     );
