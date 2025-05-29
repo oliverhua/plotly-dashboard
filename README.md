@@ -110,6 +110,9 @@ yarn build
 # Linting
 yarn lint
 
+# Formatting
+yarn format
+
 # Preview production build
 yarn preview
 ```

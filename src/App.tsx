@@ -62,8 +62,7 @@ function App() {
   );
 
   const titleClassName = useMemo(
-    () =>
-      `text-xl font-semibold text-gray-800`,
+    () => `text-xl font-semibold text-gray-800`,
     []
   );
 
