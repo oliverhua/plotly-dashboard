@@ -159,11 +159,16 @@ const SingleHeatmap = React.memo(
           t: PLOT_MARGINS.TOP,
           pad: PLOT_MARGINS.PAD,
         },
-        height: PLOT_HEIGHT,
         font: {
           family: PLOT_CONFIG.FONT_FAMILY,
           size: PLOT_CONFIG.BODY_FONT_SIZE,
           color: PLOT_CONFIG.FONT_COLOR,
+        },
+        width: undefined,
+        height: undefined,
+        aspectratio: {
+          x: 1,
+          y: 1,
         },
       }),
       [filename]
@@ -182,18 +187,35 @@ const SingleHeatmap = React.memo(
 
     // Heatmap data
     const plotData = useMemo(
-      () => [
-        {
-          z: data.z,
-          x: data.x,
-          y: data.y,
-          type: PLOTLY.HEATMAP_TYPE,
-          colorscale: PLOT_CONFIG.COLORSCALE as any,
-          zmin: PLOT_CONFIG.HEATMAP_Z_MIN,
-          zmax: PLOT_CONFIG.HEATMAP_Z_MAX,
-          showscale: true,
-        },
-      ],
+      () => {
+        // Process the data to set diagonal elements to null (where x = y)
+        const processedZ = data.z.map((row, rowIndex) =>
+          row.map((value, colIndex) => {
+            // If this is a diagonal element (x = y), return null
+            if (rowIndex === colIndex) {
+              return null;
+            }
+            return value;
+          })
+        );
+
+        return [
+          {
+            z: processedZ,
+            x: data.x,
+            y: data.y,
+            type: PLOTLY.HEATMAP_TYPE,
+            colorscale: PLOT_CONFIG.COLORSCALE as any,
+            zmin: PLOT_CONFIG.HEATMAP_Z_MIN,
+            zmax: PLOT_CONFIG.HEATMAP_Z_MAX,
+            showscale: true,
+            // Configure how null values are displayed
+            hovertemplate: '<b>%{x}</b><br><b>%{y}</b><br>Value: %{z}<extra></extra>',
+            // Handle null values by setting them to a specific color
+            zmid: null, // Let Plotly handle the middle value automatically
+          },
+        ];
+      },
       [data]
     );
 
@@ -213,12 +235,15 @@ const SingleHeatmap = React.memo(
     return (
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden mb-6">
         <div className="p-4">
-          <Plot
-            data={plotData}
-            layout={layout}
-            config={plotConfig}
-            style={plotContainerStyle}
-          />
+          {/* Container with square aspect ratio */}
+          <div className="w-full aspect-square">
+            <Plot
+              data={plotData}
+              layout={layout}
+              config={plotConfig}
+              style={plotContainerStyle}
+            />
+          </div>
         </div>
       </div>
     );
