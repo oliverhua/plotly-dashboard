@@ -215,18 +215,18 @@ const SingleHeatmap = React.memo(
         })
       );
 
-      // Generate numbered labels starting from 1
+      // Generate numbered labels starting from 0
       const numRows = data.z.length;
       const numCols = data.z[0]?.length || 0;
 
-      // Create x-axis labels: 1, 2, 3, ..., numCols
+      // Create x-axis labels: 0, 1, 2, ..., numCols-1
       const xLabels = Array.from({ length: numCols }, (_, i) =>
-        (i + 1).toString()
+        i.toString()
       );
 
-      // Create y-axis labels: 1, 2, 3, ..., numRows
+      // Create y-axis labels: 0, 1, 2, ..., numRows-1
       const yLabels = Array.from({ length: numRows }, (_, i) =>
-        (i + 1).toString()
+        i.toString()
       );
 
       return [
