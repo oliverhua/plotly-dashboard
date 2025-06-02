@@ -19,9 +19,9 @@ def generate_heatmap_data(rows=10, cols=10):
     # Generate random data in range 0-500
     z = np.random.rand(rows, cols) * 500
     
-    # Generate x and y labels
-    x = [f"X{i}" for i in range(cols)]
-    y = [f"Y{i}" for i in range(rows)]
+    # Generate x and y labels starting from 1
+    x = [f"X{i}" for i in range(1, cols + 1)]
+    y = [f"Y{i}" for i in range(1, rows + 1)]
     
     return {
         "z": z.tolist(),

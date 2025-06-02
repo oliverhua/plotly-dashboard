@@ -219,15 +219,9 @@ const SingleHeatmap = React.memo(
       const numRows = data.z.length;
       const numCols = data.z[0]?.length || 0;
 
-      // Create x-axis labels: 0, 1, 2, ..., numCols-1
-      const xLabels = Array.from({ length: numCols }, (_, i) =>
-        i.toString()
-      );
-
-      // Create y-axis labels: 0, 1, 2, ..., numRows-1
-      const yLabels = Array.from({ length: numRows }, (_, i) =>
-        i.toString()
-      );
+      // Use the original x and y labels from the JSON data
+      const xLabels = data.x;
+      const yLabels = data.y;
 
       return [
         {
