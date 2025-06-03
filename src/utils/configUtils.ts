@@ -45,7 +45,10 @@ export const getPlotlyConfig = (): PlotlyConfig => {
  */
 export const getFolderDisplayName = (folderName: string): string => {
   const config = getPlotlyConfig();
-  return config.displayNames.folders[folderName] || formatFallbackName(folderName, config.fallbackSettings);
+  return (
+    config.displayNames.folders[folderName] ||
+    formatFallbackName(folderName, config.fallbackSettings)
+  );
 };
 
 /**
@@ -53,7 +56,10 @@ export const getFolderDisplayName = (folderName: string): string => {
  */
 export const getTestcaseDisplayName = (testcaseName: string): string => {
   const config = getPlotlyConfig();
-  return config.displayNames.testcases[testcaseName] || formatFallbackName(testcaseName, config.fallbackSettings);
+  return (
+    config.displayNames.testcases[testcaseName] ||
+    formatFallbackName(testcaseName, config.fallbackSettings)
+  );
 };
 
 /**
@@ -61,7 +67,10 @@ export const getTestcaseDisplayName = (testcaseName: string): string => {
  */
 export const getFileDisplayName = (fileName: string): string => {
   const config = getPlotlyConfig();
-  return config.displayNames.files[fileName] || formatFallbackName(fileName, config.fallbackSettings);
+  return (
+    config.displayNames.files[fileName] ||
+    formatFallbackName(fileName, config.fallbackSettings)
+  );
 };
 
 /**
@@ -84,15 +93,23 @@ export const getAxisLabels = () => {
 /**
  * Get Z-axis range for a specific folder
  */
-export const getZAxisRange = (folderName: string): { zmin: number; zmax: number } => {
+export const getZAxisRange = (
+  folderName: string
+): { zmin: number; zmax: number } => {
   const config = getPlotlyConfig();
-  return config.chartSettings.zAxisRanges[folderName] || config.chartSettings.zAxisRanges.default;
+  return (
+    config.chartSettings.zAxisRanges[folderName] ||
+    config.chartSettings.zAxisRanges.default
+  );
 };
 
 /**
  * Format name using fallback settings
  */
-const formatFallbackName = (name: string, fallbackSettings: PlotlyConfig['fallbackSettings']): string => {
+const formatFallbackName = (
+  name: string,
+  fallbackSettings: PlotlyConfig['fallbackSettings']
+): string => {
   let formatted = name;
 
   // Remove file extension if enabled
@@ -111,4 +128,4 @@ const formatFallbackName = (name: string, fallbackSettings: PlotlyConfig['fallba
   }
 
   return formatted;
-}; 
+};

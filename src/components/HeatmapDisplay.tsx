@@ -19,8 +19,13 @@ import {
   TRANSITION_DURATION,
 } from '../constants';
 import { AnimationContext } from '../contexts/AnimationContext';
+import {
+  getAxisLabels,
+  getChartTitle,
+  getTestcaseDisplayName,
+  getZAxisRange,
+} from '../utils/configUtils';
 import type { TestcaseData } from '../utils/dataUtils';
-import { getChartTitle, getAxisLabels, getTestcaseDisplayName, getZAxisRange } from '../utils/configUtils';
 
 interface HeatmapDisplayProps {
   testcaseData: TestcaseData | null;
@@ -145,10 +150,10 @@ const SingleHeatmap = React.memo(
   }) => {
     // Get axis labels from config
     const axisLabels = useMemo(() => getAxisLabels(), []);
-    
+
     // Get Z-axis range for the current folder
     const zAxisRange = useMemo(() => getZAxisRange(folderName), [folderName]);
-    
+
     // Layout configuration for individual heatmap
     const layout: Partial<Layout> = useMemo(
       () => ({
@@ -313,7 +318,10 @@ const HeatmapDisplay: React.FC<HeatmapDisplayProps> = React.memo(
     renderCount.current += 1;
 
     // Get display name for selected testcase
-    const testcaseDisplayName = useMemo(() => getTestcaseDisplayName(selectedTestcase), [selectedTestcase]);
+    const testcaseDisplayName = useMemo(
+      () => getTestcaseDisplayName(selectedTestcase),
+      [selectedTestcase]
+    );
 
     // Container class name
     const containerClassName = useMemo(() => {

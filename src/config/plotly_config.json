@@ -6,7 +6,7 @@
     },
     "testcases": {
       "testcaseA": "Test Case A",
-      "testcaseB": "Test Case B", 
+      "testcaseB": "Test Case B",
       "testcaseC": "Test Case C"
     },
     "files": {
@@ -50,4 +50,4 @@
     "replaceUnderscoreWithSpace": true,
     "capitalizeFirstLetter": true
   }
-} 
+}

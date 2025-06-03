@@ -1,4 +1,5 @@
 import { JSON_EXTENSION } from '../constants';
+
 import { getFolderDisplayName } from './configUtils';
 
 /**
