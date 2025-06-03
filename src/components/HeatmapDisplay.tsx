@@ -8,7 +8,6 @@ import {
   CSS_CLASSES,
   DISPLAY_NAMES,
   ERROR_TITLE,
-  JSON_EXTENSION,
   LOADING_MESSAGE,
   LOADING_TITLE,
   NO_DATA_MESSAGE,
@@ -21,12 +20,14 @@ import {
 } from '../constants';
 import { AnimationContext } from '../contexts/AnimationContext';
 import type { TestcaseData } from '../utils/dataUtils';
+import { getChartTitle, getAxisLabels, getTestcaseDisplayName, getZAxisRange } from '../utils/configUtils';
 
 interface HeatmapDisplayProps {
   testcaseData: TestcaseData | null;
   isLoading: boolean;
   error: string | null;
   selectedTestcase: string;
+  selectedFolder: string;
 }
 
 // 提取狀態顯示組件以減少重複代碼
@@ -135,16 +136,24 @@ const SingleHeatmap = React.memo(
     filename,
     data,
     isAnimating,
+    folderName,
   }: {
     filename: string;
     data: { z: number[][]; x: string[]; y: string[] };
     isAnimating: boolean;
+    folderName: string;
   }) => {
+    // Get axis labels from config
+    const axisLabels = useMemo(() => getAxisLabels(), []);
+    
+    // Get Z-axis range for the current folder
+    const zAxisRange = useMemo(() => getZAxisRange(folderName), [folderName]);
+    
     // Layout configuration for individual heatmap
     const layout: Partial<Layout> = useMemo(
       () => ({
         title: {
-          text: filename.replace(JSON_EXTENSION, '').replace(/_/g, ' '),
+          text: getChartTitle(filename),
           font: {
             family: PLOT_CONFIG.FONT_FAMILY,
             size: PLOT_CONFIG.TITLE_FONT_SIZE,
@@ -172,7 +181,7 @@ const SingleHeatmap = React.memo(
         yaxis: {
           autorange: 'reversed',
           title: {
-            text: 'To PF State',
+            text: axisLabels.yAxisTitle,
             font: {
               family: PLOT_CONFIG.FONT_FAMILY,
               size: PLOT_CONFIG.BODY_FONT_SIZE,
@@ -183,7 +192,7 @@ const SingleHeatmap = React.memo(
         xaxis: {
           side: 'top',
           title: {
-            text: 'From PF State',
+            text: axisLabels.xAxisTitle,
             font: {
               family: PLOT_CONFIG.FONT_FAMILY,
               size: PLOT_CONFIG.BODY_FONT_SIZE,
@@ -192,7 +201,7 @@ const SingleHeatmap = React.memo(
           },
         },
       }),
-      [filename]
+      [filename, axisLabels]
     );
 
     // Plotly configuration
@@ -243,8 +252,8 @@ const SingleHeatmap = React.memo(
           y: yLabels,
           type: PLOTLY.HEATMAP_TYPE,
           colorscale: PLOT_CONFIG.COLORSCALE as unknown as string,
-          zmin: PLOT_CONFIG.HEATMAP_Z_MIN,
-          zmax: PLOT_CONFIG.HEATMAP_Z_MAX,
+          zmin: zAxisRange.zmin,
+          zmax: zAxisRange.zmax,
           showscale: true,
           // Add text annotations to show values on each cell
           text: textData as unknown as string,
@@ -261,7 +270,7 @@ const SingleHeatmap = React.memo(
           zmid: null, // Let Plotly handle the middle value automatically
         },
       ];
-    }, [data]);
+    }, [data, zAxisRange]);
 
     // Plot container style
     const plotContainerStyle = useMemo(
@@ -298,10 +307,13 @@ SingleHeatmap.displayName = 'SingleHeatmap';
 
 // The main heatmap display component
 const HeatmapDisplay: React.FC<HeatmapDisplayProps> = React.memo(
-  ({ testcaseData, isLoading, error, selectedTestcase }) => {
+  ({ testcaseData, isLoading, error, selectedTestcase, selectedFolder }) => {
     const { isAnimating } = useContext(AnimationContext);
     const renderCount = useRef(0);
     renderCount.current += 1;
+
+    // Get display name for selected testcase
+    const testcaseDisplayName = useMemo(() => getTestcaseDisplayName(selectedTestcase), [selectedTestcase]);
 
     // Container class name
     const containerClassName = useMemo(() => {
@@ -343,7 +355,7 @@ const HeatmapDisplay: React.FC<HeatmapDisplayProps> = React.memo(
         {/* Testcase title */}
         <div className="mb-6">
           <h3 className="text-xl font-semibold text-gray-800 mb-2">
-            {selectedTestcase}
+            {testcaseDisplayName}
           </h3>
           <p className="text-sm text-gray-600">
             {testcaseData?.heatmaps.length || 0} heatmap(s) in this testcase
@@ -358,6 +370,7 @@ const HeatmapDisplay: React.FC<HeatmapDisplayProps> = React.memo(
               filename={heatmap.filename}
               data={heatmap.data}
               isAnimating={isAnimating}
+              folderName={selectedFolder}
             />
           ))}
         </div>

@@ -1,4 +1,5 @@
 import { JSON_EXTENSION } from '../constants';
+import { getFolderDisplayName } from './configUtils';
 
 /**
  * Remove file extension from filename
@@ -8,10 +9,10 @@ export const removeFileExtension = (filename: string): string => {
 };
 
 /**
- * Format folder name for display (replace underscores with spaces)
+ * Format folder name for display using config or fallback to replace underscores with spaces
  */
 export const formatFolderName = (folderName: string): string => {
-  return folderName.replace(/_/g, ' ');
+  return getFolderDisplayName(folderName);
 };
 
 /**

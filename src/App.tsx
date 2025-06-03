@@ -140,6 +140,7 @@ function App() {
                     isLoading={isLoading}
                     error={error}
                     selectedTestcase={selectedTestcase}
+                    selectedFolder={selectedFolder}
                   />
                 </div>
               </div>

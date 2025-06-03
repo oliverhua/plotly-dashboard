@@ -1,0 +1,53 @@
+{
+  "displayNames": {
+    "folders": {
+      "DVFS_Latency": "DVFS Latency Analysis",
+      "Power_On_Latency": "Power On Latency Analysis"
+    },
+    "testcases": {
+      "testcaseA": "Test Case A",
+      "testcaseB": "Test Case B", 
+      "testcaseC": "Test Case C"
+    },
+    "files": {
+      "SSWRP1.json": "Single System Write-Read Performance 1",
+      "SSWRP2.json": "Single System Write-Read Performance 2",
+      "SSWRP3.json": "Single System Write-Read Performance 3",
+      "SSWRP4.json": "Single System Write-Read Performance 4",
+      "SSWRP5.json": "Single System Write-Read Performance 5",
+      "SSWRP6.json": "Single System Write-Read Performance 6",
+      "SSWRP7.json": "Single System Write-Read Performance 7",
+      "SSWRP8.json": "Single System Write-Read Performance 8",
+      "SSWRP9.json": "Single System Write-Read Performance 9"
+    }
+  },
+  "chartSettings": {
+    "axisLabels": {
+      "xAxisTitle": "From PF State",
+      "yAxisTitle": "To PF State"
+    },
+    "titles": {
+      "defaultPrefix": "",
+      "defaultSuffix": " - Performance Heatmap"
+    },
+    "zAxisRanges": {
+      "DVFS_Latency": {
+        "zmin": 0,
+        "zmax": 150
+      },
+      "Power_On_Latency": {
+        "zmin": 0,
+        "zmax": 300
+      },
+      "default": {
+        "zmin": 0,
+        "zmax": 200
+      }
+    }
+  },
+  "fallbackSettings": {
+    "removeFileExtension": true,
+    "replaceUnderscoreWithSpace": true,
+    "capitalizeFirstLetter": true
+  }
+} 

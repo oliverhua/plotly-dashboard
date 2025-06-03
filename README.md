@@ -13,6 +13,43 @@ A modern, optimized React application for visualizing heatmap data using Plotly.
 - **Performance Optimized**: Memoized components, request deduplication, and caching
 - **Type Safe**: Full TypeScript support with strict type checking
 - **Modern UI**: Tailwind CSS with responsive design and accessibility features
+- **🆕 Flexible Configuration System**: Customize display names, chart settings, and Z-axis ranges through JSON configuration
+
+## 🎛️ Configuration System
+
+The application includes a powerful configuration system that allows you to customize:
+
+- **Display Names**: Custom names for folders, testcases, and files
+- **Chart Settings**: Axis labels, chart titles, and Z-axis ranges per folder
+- **Fallback Formatting**: Automatic name formatting rules
+
+### Quick Configuration
+
+Edit `src/config/plotly_config.json` to customize the interface:
+
+```json
+{
+  "displayNames": {
+    "folders": {
+      "DVFS_Latency": "DVFS Latency Analysis",
+      "Power_On_Latency": "Power On Latency Analysis"
+    },
+    "testcases": {
+      "testcaseA": "Test Case A",
+      "testcaseB": "Test Case B"
+    }
+  },
+  "chartSettings": {
+    "zAxisRanges": {
+      "DVFS_Latency": { "zmin": 0, "zmax": 150 },
+      "Power_On_Latency": { "zmin": 0, "zmax": 300 },
+      "default": { "zmin": 0, "zmax": 200 }
+    }
+  }
+}
+```
+
+📖 **[Complete Configuration Guide](PLOTLY_CONFIG_GUIDE.md)** - Detailed documentation with examples and best practices
 
 ## 📁 Data Structure (IMPORTANT!)
 
