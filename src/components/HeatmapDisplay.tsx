@@ -232,9 +232,6 @@ const SingleHeatmap = React.memo(
       );
 
       // Generate numbered labels starting from 0
-      const numRows = data.z.length;
-      const numCols = data.z[0]?.length || 0;
-
       // Use the original x and y labels from the JSON data
       const xLabels = data.x;
       const yLabels = data.y;
