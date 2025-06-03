@@ -243,7 +243,7 @@ const SingleHeatmap = React.memo(
           },
           // Configure how null values are displayed
           hovertemplate:
-            '<b>%{x}</b><br><b>%{y}</b><br>Value: %{z}<extra></extra>',
+            'from <b>%{x}</b> to <b>%{y}</b><br>Value: %{z}<extra></extra>',
           // Handle null values by setting them to a specific color
           zmid: null, // Let Plotly handle the middle value automatically
         },
