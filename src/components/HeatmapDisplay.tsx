@@ -155,7 +155,7 @@ const SingleHeatmap = React.memo(
           l: PLOT_MARGINS.LEFT,
           r: PLOT_MARGINS.RIGHT,
           b: PLOT_MARGINS.BOTTOM,
-          t: PLOT_MARGINS.TOP,
+          t: PLOT_MARGINS.TOP + 40,
           pad: PLOT_MARGINS.PAD,
         },
         font: {
@@ -171,9 +171,25 @@ const SingleHeatmap = React.memo(
         },
         yaxis: {
           autorange: 'reversed',
+          title: {
+            text: 'To PF State',
+            font: {
+              family: PLOT_CONFIG.FONT_FAMILY,
+              size: PLOT_CONFIG.BODY_FONT_SIZE,
+              color: PLOT_CONFIG.FONT_COLOR,
+            },
+          },
         },
         xaxis: {
           side: 'top',
+          title: {
+            text: 'From PF State',
+            font: {
+              family: PLOT_CONFIG.FONT_FAMILY,
+              size: PLOT_CONFIG.BODY_FONT_SIZE,
+              color: PLOT_CONFIG.FONT_COLOR,
+            },
+          },
         },
       }),
       [filename]
