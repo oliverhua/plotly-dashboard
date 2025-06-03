@@ -144,7 +144,7 @@ const SingleHeatmap = React.memo(
     const layout: Partial<Layout> = useMemo(
       () => ({
         title: {
-          text: filename.replace(JSON_EXTENSION, ''),
+          text: filename.replace(JSON_EXTENSION, '').replace(/_/g, ' '),
           font: {
             family: PLOT_CONFIG.FONT_FAMILY,
             size: PLOT_CONFIG.TITLE_FONT_SIZE,
