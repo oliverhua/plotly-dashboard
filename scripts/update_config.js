@@ -144,7 +144,7 @@ function updatePlotlyConfig(folderStructure) {
   // 更新標題設定
   chartSettings.titles = chartSettings.titles || {
     defaultPrefix: "",
-    defaultSuffix: " - Performance Heatmap"
+    defaultSuffix: ""
   };
 
   // 更新 zAxisRanges
