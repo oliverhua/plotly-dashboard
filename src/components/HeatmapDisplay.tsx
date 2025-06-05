@@ -273,6 +273,17 @@ const SingleHeatmap = React.memo(
             'from <b>%{y}</b> to <b>%{x}</b><br>Value: %{z}<extra></extra>',
           // Handle null values by setting them to a specific color
           zmid: null, // Let Plotly handle the middle value automatically
+          colorbar: {
+            title: {
+              text: 'Time(us)',
+              side: 'top' as const,
+              font: {
+                family: PLOT_CONFIG.FONT_FAMILY,
+                size: PLOT_CONFIG.BODY_FONT_SIZE,
+                color: PLOT_CONFIG.FONT_COLOR,
+              },
+            },
+          },
         },
       ];
     }, [data, zAxisRange]);
