@@ -14,6 +14,7 @@ import {
 import { AnimationContext } from './contexts/AnimationContext';
 import { useHeatmapData } from './hooks/useHeatmapData';
 import { formatFolderName } from './utils/helpers';
+import { getTestcaseDisplayName } from './utils/configUtils';
 
 function App() {
   // URL parameters - decode them to handle any URL encoding
@@ -51,6 +52,12 @@ function App() {
     [isAnimating, lastSelectedTestcase]
   );
 
+  // Get testcase display name
+  const testcaseDisplayName = useMemo(
+    () => selectedTestcase ? getTestcaseDisplayName(selectedTestcase) : '',
+    [selectedTestcase]
+  );
+
   // Memoize class names
   const headerClassName = useMemo(
     () =>
@@ -67,32 +74,32 @@ function App() {
 
   const mainClassName = useMemo(
     () =>
-      `flex-1 p-6 overflow-auto border-l border-gray-100 transition-colors duration-300 ${
-        isAnimating ? 'bg-gray-100' : 'bg-gray-50'
+      `flex-1 overflow-y-auto transition-all duration-300 ${
+        isAnimating ? 'bg-gray-50' : 'bg-white'
       }`,
     [isAnimating]
   );
 
   const titleContainerClassName = useMemo(
     () =>
-      `mb-6 transition-all duration-300 ${
-        isAnimating ? 'transform translate-y-1' : ''
+      `px-6 py-4 transition-all duration-300 ${
+        isAnimating ? 'bg-gray-50' : 'bg-white'
       }`,
     [isAnimating]
   );
 
   const contentTitleClassName = useMemo(
     () =>
-      `text-lg font-medium transition-colors duration-300 ${
-        isAnimating ? 'text-blue-700' : 'text-gray-800'
+      `text-2xl font-semibold text-gray-800 transition-all duration-300 ${
+        isAnimating ? 'scale-105' : 'scale-100'
       }`,
     [isAnimating]
   );
 
   const heatmapContainerClassName = useMemo(
     () =>
-      `bg-white rounded-lg border shadow-sm overflow-hidden transition-all duration-500 ${
-        isAnimating ? 'shadow-md border-blue-100' : 'border-gray-100'
+      `px-6 pb-6 transition-all duration-300 ${
+        isAnimating ? 'bg-gray-50' : 'bg-white'
       }`,
     [isAnimating]
   );
@@ -124,7 +131,7 @@ function App() {
                 <div className={titleContainerClassName}>
                   <h2 className={contentTitleClassName}>
                     {selectedFolder && selectedTestcase
-                      ? `${formatFolderName(selectedFolder)} - ${selectedTestcase}`
+                      ? `${formatFolderName(selectedFolder)} - ${testcaseDisplayName}`
                       : DEFAULT_CONTENT_TITLE}
                   </h2>
                   <p className="text-sm text-gray-500 mt-1">

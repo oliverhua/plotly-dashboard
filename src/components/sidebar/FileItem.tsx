@@ -1,9 +1,9 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 import { ANIMATION_DURATION, DISPLAY_NAMES } from '../../constants';
 import { AnimationContext } from '../../contexts/AnimationContext';
-import { removeFileExtension } from '../../utils/helpers';
+import { getFileDisplayName } from '../../utils/configUtils';
 
 import type { FileItemProps } from './types';
 
@@ -34,6 +34,12 @@ const FileItem: React.FC<FileItemProps> = React.memo(
       [file, setIsAnimating, setLastSelectedFile, isSelected]
     );
 
+    // Get display name for file
+    const fileDisplayName = useMemo(
+      () => getFileDisplayName(file),
+      [file]
+    );
+
     // Use relative path - React Router will handle the basename
     const linkTo = `/${encodeURIComponent(folder)}/${encodeURIComponent(file)}`;
 
@@ -48,7 +54,7 @@ const FileItem: React.FC<FileItemProps> = React.memo(
           }`}
           onClick={handleClick}
         >
-          {removeFileExtension(file)}
+          {fileDisplayName}
         </Link>
       </li>
     );
