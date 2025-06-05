@@ -68,7 +68,7 @@ function generateDisplayName(name, type = 'default') {
     return 'Default Test Case';
   }
   
-  return name;
+  return name.replace(/_/g, ' ')
 }
 
 // 自動配置 plotly_config.json
