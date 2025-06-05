@@ -5,14 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/generate_folder_structure.js && tsc -b && vite build",
+    "build": "node scripts/update_structure.js && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
-    "generate-data": "python scripts/generate_heatmaps.py && node scripts/generate_folder_structure.js",
-    "update-structure": "node scripts/generate_folder_structure.js"
+    "generate-data": "python scripts/generate_heatmaps.py && node scripts/update_structure.js",
+    "update-structure": "node scripts/update_structure.js",
+    "update-config": "node scripts/update_config.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.6",
