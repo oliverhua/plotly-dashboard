@@ -1,24 +1,24 @@
 {
   "displayNames": {
     "folders": {
-      "DVFS_Latency": "Dvfs Latency",
+      "DVFS_Latency": "DVFS Latency",
       "Power_On_Latency": "Power On Latency"
     },
     "testcases": {
-      "testcaseA": "Testcasea",
-      "testcaseB": "Testcaseb",
-      "testcaseC": "Testcasec"
+      "testcaseA": "testcaseA",
+      "testcaseB": "testcaseB",
+      "testcaseC": "testcaseC"
     },
     "files": {
-      "SSWRP1.json": "Sswrp1",
-      "SSWRP2.json": "Sswrp2",
-      "SSWRP3.json": "Sswrp3",
-      "SSWRP4.json": "Sswrp4",
-      "SSWRP5.json": "Sswrp5",
-      "SSWRP6.json": "Sswrp6",
-      "SSWRP7.json": "Sswrp7",
-      "SSWRP8.json": "Sswrp8",
-      "SSWRP9.json": "Sswrp9"
+      "SSWRP1.json": "SSWRP1",
+      "SSWRP2.json": "SSWRP2",
+      "SSWRP3.json": "SSWRP3",
+      "SSWRP4.json": "SSWRP4",
+      "SSWRP5.json": "SSWRP5",
+      "SSWRP6.json": "SSWRP6",
+      "SSWRP7.json": "SSWRP7",
+      "SSWRP8.json": "SSWRP8",
+      "SSWRP9.json": "SSWRP9"
     }
   },
   "chartSettings": {
@@ -28,7 +28,7 @@
     },
     "titles": {
       "defaultPrefix": "",
-      "defaultSuffix": " - Performance Heatmap"
+      "defaultSuffix": ""
     },
     "zAxisRanges": {
       "DVFS_Latency": {

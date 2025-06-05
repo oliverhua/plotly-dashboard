@@ -133,8 +133,8 @@ function updatePlotlyConfig(folderStructure) {
   
   // 更新軸標籤
   chartSettings.axisLabels = chartSettings.axisLabels || {
-    xAxisTitle: "X Axis",
-    yAxisTitle: "Y Axis"
+    xAxisTitle: "From PF State",
+    yAxisTitle: "To PF State"
   };
 
   // 更新標題設定
