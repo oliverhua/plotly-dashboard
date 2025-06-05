@@ -68,11 +68,7 @@ function generateDisplayName(name, type = 'default') {
     return 'Default Test Case';
   }
   
-  return name
-    .replace(/_/g, ' ')
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
+  return name;
 }
 
 // 自動配置 plotly_config.json
