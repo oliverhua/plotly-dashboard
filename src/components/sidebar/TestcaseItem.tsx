@@ -1,8 +1,9 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 import { ANIMATION_DURATION, DISPLAY_NAMES } from '../../constants';
 import { AnimationContext } from '../../contexts/AnimationContext';
+import { getTestcaseDisplayName } from '../../utils/configUtils';
 
 import type { TestcaseItemProps } from './types';
 
@@ -33,6 +34,12 @@ const TestcaseItem: React.FC<TestcaseItemProps> = React.memo(
       [testcase, setIsAnimating, setLastSelectedFile, isSelected]
     );
 
+    // Get display name for testcase
+    const testcaseDisplayName = useMemo(
+      () => getTestcaseDisplayName(testcase),
+      [testcase]
+    );
+
     // Use relative path - React Router will handle the basename
     const linkTo = `/${encodeURIComponent(folder)}/${encodeURIComponent(testcase)}`;
 
@@ -47,7 +54,7 @@ const TestcaseItem: React.FC<TestcaseItemProps> = React.memo(
           }`}
           onClick={handleClick}
         >
-          {testcase}
+          {testcaseDisplayName}
         </Link>
       </li>
     );
