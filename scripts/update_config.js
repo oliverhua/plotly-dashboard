@@ -137,6 +137,12 @@ function updatePlotlyConfig(folderStructure) {
     yAxisTitle: "From PF State"
   };
 
+  // 更新長條圖軸標籤
+  chartSettings.barChartAxisLabels = chartSettings.barChartAxisLabels || {
+    xAxisTitle: "Test Items (Heatmaps)",
+    yAxisTitle: "Time(us)"
+  };
+
   // 更新標題設定
   chartSettings.titles = chartSettings.titles || {
     defaultPrefix: "",
@@ -232,10 +238,154 @@ function updatePlotlyConfig(folderStructure) {
   console.log(`- Total files: ${Object.keys(displayNames.files).length} (${newFiles} new)`);
 }
 
+// 計算陣列的平均值
+function calculateAverage(array) {
+  if (!array || array.length === 0) return 0;
+  const sum = array.reduce((acc, val) => acc + val, 0);
+  return sum / array.length;
+}
+
+// 計算熱圖資料的平均值
+function calculateHeatmapAverages(heatmapData) {
+  const averages = {
+    zValue: 0,
+    metrics: {}
+  };
+
+  // 計算 z 值的平均
+  if (heatmapData.z && heatmapData.z.length > 0) {
+    const allZValues = heatmapData.z.flat().filter(val => val !== null);
+    averages.zValue = calculateAverage(allZValues);
+  }
+
+  // 計算每個額外指標的平均值
+  if (heatmapData.additionalMetrics) {
+    Object.keys(heatmapData.additionalMetrics).forEach(metricKey => {
+      const metric = heatmapData.additionalMetrics[metricKey];
+      if (metric && metric.values) {
+        const allMetricValues = metric.values.flat();
+        averages.metrics[metricKey] = {
+          value: calculateAverage(allMetricValues),
+          label: metric.label || metricKey
+        };
+      }
+    });
+  }
+
+  return averages;
+}
+
+// 生成長條圖資料
+function generateBarChartData(folderStructure) {
+  const barChartData = [];
+  
+  Object.keys(folderStructure).forEach(folderName => {
+    const folderData = folderStructure[folderName];
+    
+    Object.keys(folderData).forEach(testcase => {
+      const files = folderData[testcase];
+      
+      files.forEach(filename => {
+        const filePath = path.join('public/data', folderName, testcase, filename);
+        
+        if (fs.existsSync(filePath)) {
+          try {
+            const fileContent = fs.readFileSync(filePath, 'utf8');
+            const heatmapData = JSON.parse(fileContent);
+            
+            // 只處理有額外指標的資料
+            if (heatmapData.additionalMetrics) {
+              const averages = calculateHeatmapAverages(heatmapData);
+              
+              const testItemName = filename.replace('.json', '');
+              
+              barChartData.push({
+                testItem: testItemName,
+                testcase: testcase,
+                folder: folderName,
+                zValueAverage: averages.zValue,
+                metricsAverages: averages.metrics,
+                timestamp: new Date().toISOString()
+              });
+            }
+          } catch (error) {
+            console.warn(`Error processing file ${filePath}:`, error.message);
+          }
+        }
+      });
+    });
+  });
+  
+  return barChartData;
+}
+
+// 創建長條圖資料夾和檔案
+function createBarChartDataStructure(barChartData) {
+  const barChartDir = path.resolve('public/data/testitem');
+  
+  // 確保目錄存在
+  if (!fs.existsSync(barChartDir)) {
+    fs.mkdirSync(barChartDir, { recursive: true });
+  }
+  
+  // 按資料夾分組長條圖資料
+  const groupedData = {};
+  barChartData.forEach(item => {
+    if (!groupedData[item.folder]) {
+      groupedData[item.folder] = [];
+    }
+    groupedData[item.folder].push(item);
+  });
+  
+  // 為每個資料夾創建長條圖檔案
+  Object.keys(groupedData).forEach(folderName => {
+    const folderBarChartData = groupedData[folderName];
+    const barChartFilePath = path.join(barChartDir, `${folderName}_gantt.json`);
+    
+    // 轉換為長條圖格式
+    const barChartData = {
+      tasks: folderBarChartData.map((item, index) => ({
+        task: item.testItem,
+        start: index * 100, // 模擬開始時間
+        duration: item.zValueAverage, // 使用 z 值平均作為持續時間
+        resource: item.testcase,
+        metrics: item.metricsAverages
+      })),
+      metadata: {
+        folder: folderName,
+        generatedAt: new Date().toISOString(),
+        totalTasks: folderBarChartData.length
+      }
+    };
+    
+    fs.writeFileSync(barChartFilePath, JSON.stringify(barChartData, null, 2));
+    console.log(`Generated bar chart data: ${barChartFilePath}`);
+  });
+  
+  return groupedData;
+}
+
 // 主函數
 function main() {
+  console.log('Starting configuration update...');
+  
   const folderStructure = generateFolderStructure();
   updatePlotlyConfig(folderStructure);
+  
+  // 生成長條圖資料
+  console.log('\nGenerating bar chart data...');
+  const barChartData = generateBarChartData(folderStructure);
+  
+  if (barChartData.length > 0) {
+    const groupedBarChartData = createBarChartDataStructure(barChartData);
+    console.log(`\nBar chart data generated successfully!`);
+    console.log(`- Total test items processed: ${barChartData.length}`);
+    console.log(`- Bar charts created for folders: ${Object.keys(groupedBarChartData).join(', ')}`);
+  } else {
+    console.log('\nNo test items with additional metrics found for bar chart generation.');
+  }
+  
+  console.log('\nConfiguration update completed!');
 }
 
 // 執行主函數

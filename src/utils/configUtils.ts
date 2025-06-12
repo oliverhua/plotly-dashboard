@@ -11,6 +11,10 @@ export interface PlotlyConfig {
       xAxisTitle: string;
       yAxisTitle: string;
     };
+    barChartAxisLabels: {
+      xAxisTitle: string;
+      yAxisTitle: string;
+    };
     titles: {
       defaultPrefix: string;
       defaultSuffix: string;
@@ -28,14 +32,14 @@ export interface PlotlyConfig {
     additionalMetrics: {
       [folderName: string]: {
         enabled: boolean;
-        labels: Record<string, string>;
-        colors: Record<string, string>;
+        labels: string[];
+        colors: string[];
         maxValue: number;
       };
       default: {
         enabled: boolean;
-        labels: Record<string, string>;
-        colors: Record<string, string>;
+        labels: string[];
+        colors: string[];
         maxValue: number;
       };
     };
@@ -102,6 +106,14 @@ export const getChartTitle = (fileName: string): string => {
 export const getAxisLabels = () => {
   const config = getPlotlyConfig();
   return config.chartSettings.axisLabels;
+};
+
+/**
+ * Get bar chart axis labels from config
+ */
+export const getBarChartAxisLabels = () => {
+  const config = getPlotlyConfig();
+  return config.chartSettings.barChartAxisLabels;
 };
 
 /**

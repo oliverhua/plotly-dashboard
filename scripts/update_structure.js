@@ -6,10 +6,10 @@ function generateFolderStructure() {
   const dataDir = path.resolve('public/data');
   const folderStructure = {};
 
-  // 讀取所有文件夾
+  // 讀取所有文件夾，排除 testitem 資料夾
   const folders = fs
     .readdirSync(dataDir, { withFileTypes: true })
-    .filter(dirent => dirent.isDirectory())
+    .filter(dirent => dirent.isDirectory() && dirent.name !== 'testitem')
     .map(dirent => dirent.name)
     .sort();
 

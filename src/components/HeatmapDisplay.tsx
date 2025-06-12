@@ -347,7 +347,7 @@ const SingleHeatmap = React.memo(
     );
 
     // Handle plot initialization and add event listeners
-    const handlePlotInitialized = (figure: any, graphDiv: any) => {
+    const handlePlotInitialized = (_figure: any, graphDiv: any) => {
       console.log('Plot initialized with graphDiv:', graphDiv);
       
       // 使用 Plotly 的原生事件系統

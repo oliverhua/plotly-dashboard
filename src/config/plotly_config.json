@@ -2,12 +2,14 @@
   "displayNames": {
     "folders": {
       "DVFS_Latency": "DVFS Latency",
-      "Power_On_Latency": "Power On Latency"
+      "Power_On_Latency": "Power On Latency",
+      "testitem": "testitem"
     },
     "testcases": {
       "testcaseA": "testcaseA",
       "testcaseB": "testcaseB",
-      "testcaseC": "testcaseC"
+      "testcaseC": "testcaseC",
+      "default": "Default Test Case"
     },
     "files": {
       "SSWRP1.json": "SSWRP1",
@@ -18,13 +20,18 @@
       "SSWRP6.json": "SSWRP6",
       "SSWRP7.json": "SSWRP7",
       "SSWRP8.json": "SSWRP8",
-      "SSWRP9.json": "SSWRP9"
+      "SSWRP9.json": "SSWRP9",
+      "DVFS_Latency_gantt.json": "DVFS Latency gantt"
     }
   },
   "chartSettings": {
     "axisLabels": {
       "xAxisTitle": "X Axis",
       "yAxisTitle": "Y Axis"
+    },
+    "barChartAxisLabels": {
+      "xAxisTitle": "Test Items (Heatmaps)",
+      "yAxisTitle": "Time(us)"
     },
     "titles": {
       "defaultPrefix": "",
@@ -40,6 +47,10 @@
         "zmax": 200
       },
       "default": {
+        "zmin": 0,
+        "zmax": 200
+      },
+      "testitem": {
         "zmin": 0,
         "zmax": 200
       }
@@ -82,6 +93,24 @@
         "maxValue": 100
       },
       "Power_On_Latency": {
+        "enabled": false,
+        "labels": [
+          "Metric 1",
+          "Metric 2",
+          "Metric 3",
+          "Metric 4",
+          "Metric 5"
+        ],
+        "colors": [
+          "#1f77b4",
+          "#ff7f0e",
+          "#2ca02c",
+          "#d62728",
+          "#9467bd"
+        ],
+        "maxValue": 100
+      },
+      "testitem": {
         "enabled": false,
         "labels": [
           "Metric 1",
