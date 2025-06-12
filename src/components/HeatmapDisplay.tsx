@@ -1,5 +1,6 @@
-import React, { useContext, useMemo, useRef } from 'react';
+import React, { useContext, useMemo, useRef, useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
+import MetricsPopup from './MetricsPopup';
 
 import type { Config, Layout } from 'plotly.js';
 
@@ -24,6 +25,7 @@ import {
   getChartTitle,
   getTestcaseDisplayName,
   getZAxisRange,
+  getAdditionalMetricsConfig,
 } from '../utils/configUtils';
 import type { TestcaseData } from '../utils/dataUtils';
 
@@ -33,6 +35,13 @@ interface HeatmapDisplayProps {
   error: string | null;
   selectedTestcase: string;
   selectedFolder: string;
+}
+
+interface PopupState {
+  x: number;
+  y: number;
+  values: number[];
+  labels: string[];
 }
 
 // 提取狀態顯示組件以減少重複代碼
@@ -144,15 +153,54 @@ const SingleHeatmap = React.memo(
     folderName,
   }: {
     filename: string;
-    data: { z: number[][]; x: string[]; y: string[] };
+    data: { 
+      z: number[][]; 
+      x: string[]; 
+      y: string[]; 
+      additionalMetrics?: { 
+        [key: string]: { 
+          values: number[][]; 
+          label?: string; 
+        } 
+      } 
+    };
     isAnimating: boolean;
     folderName: string;
   }) => {
+    const [popupState, setPopupState] = useState<PopupState | null>(null);
+    const config = getAdditionalMetricsConfig(folderName);
+
+    console.log('SingleHeatmap rendered:', { filename, folderName, config });
+
+    // 監控 popupState 的變化
+    useEffect(() => {
+      if (popupState) {
+        console.log('Popup state changed:', popupState);
+      } else {
+        console.log('Popup state is null');
+      }
+    }, [popupState]);
+
     // Get axis labels from config
     const axisLabels = useMemo(() => getAxisLabels(), []);
 
     // Get Z-axis range for the current folder
     const zAxisRange = useMemo(() => getZAxisRange(folderName), [folderName]);
+
+    // Plotly configuration
+    const plotConfig: Partial<Config> = useMemo(
+      () => ({
+        responsive: true,
+        displayModeBar: true,
+        modeBarButtonsToRemove: [...PLOTLY.MODE_BAR_BUTTONS_TO_REMOVE],
+        displaylogo: false,
+        // 確保點擊事件能被觸發
+        staticPlot: false,
+        editable: false,
+        scrollZoom: false,
+      }),
+      []
+    );
 
     // Layout configuration for individual heatmap
     const layout: Partial<Layout> = useMemo(
@@ -205,23 +253,17 @@ const SingleHeatmap = React.memo(
             },
           },
         },
+        // 確保點擊事件能被觸發
+        hovermode: 'closest',
+        clickmode: 'event',
       }),
       [filename, axisLabels]
     );
 
-    // Plotly configuration
-    const plotConfig: Partial<Config> = useMemo(
-      () => ({
-        responsive: true,
-        displayModeBar: true,
-        modeBarButtonsToRemove: [...PLOTLY.MODE_BAR_BUTTONS_TO_REMOVE],
-        displaylogo: false,
-      }),
-      []
-    );
-
     // Heatmap data
     const plotData = useMemo(() => {
+      console.log('Generating plot data:', { data, config });
+      
       // Process the data to set diagonal elements to null (where x = y)
       const processedZ = data.z.map((row, rowIndex) =>
         row.map((value, colIndex) => {
@@ -284,6 +326,9 @@ const SingleHeatmap = React.memo(
               },
             },
           },
+          // 確保點擊事件能被觸發
+          hoverinfo: 'all' as const,
+          connectgaps: false,
         },
       ];
     }, [data, zAxisRange]);
@@ -301,6 +346,95 @@ const SingleHeatmap = React.memo(
       [isAnimating]
     );
 
+    // Handle plot initialization and add event listeners
+    const handlePlotInitialized = (figure: any, graphDiv: any) => {
+      console.log('Plot initialized with graphDiv:', graphDiv);
+      
+      // 使用 Plotly 的原生事件系統
+      if (graphDiv && typeof graphDiv.on === 'function') {
+        console.log('Adding plotly_click event listener');
+        
+        graphDiv.on('plotly_click', (eventData: any) => {
+          console.log('=== PLOTLY CLICK EVENT ===');
+          console.log('Event data:', eventData);
+          
+          if (!eventData || !eventData.points || eventData.points.length === 0) {
+            console.log('No points in event data');
+            return;
+          }
+          
+          if (!data.additionalMetrics || !config.enabled) {
+            console.log('No additional metrics or config not enabled');
+            return;
+          }
+
+          const point = eventData.points[0];
+          const xIndex = data.x.indexOf(point.x);
+          const yIndex = data.y.indexOf(point.y);
+          const zValue = point.z;
+
+          console.log('Indices:', { xIndex, yIndex, zValue });
+
+          if (zValue === null || xIndex === -1 || yIndex === -1) {
+            console.log('Invalid indices or null value');
+            return;
+          }
+
+          const metrics = data.additionalMetrics;
+          if (!metrics) {
+            console.log('No metrics found');
+            return;
+          }
+          
+          // 收集所有指標的值和標籤
+          const values: number[] = [];
+          const labels: string[] = [];
+          
+          // 從配置中獲取標籤順序
+          const configLabels = config.labels;
+          
+          // 按照配置順序處理指標
+          Object.keys(metrics).forEach((metricKey, index) => {
+            const metric = metrics[metricKey];
+            if (metric && metric.values && metric.values[yIndex] && metric.values[yIndex][xIndex] !== undefined) {
+              const value = metric.values[yIndex][xIndex];
+              const validValue = Math.min(Math.max(value, 0), config.maxValue);
+              values.push(validValue);
+              
+              // 使用配置中的標籤，如果沒有則使用資料中的標籤
+              const label = configLabels[index] || metric.label || `Metric ${index + 1}`;
+              labels.push(label);
+            }
+          });
+          
+          if (values.length === 0) {
+            console.log('No valid metric values found');
+            return;
+          }
+
+          // 使用實際的點擊座標
+          const clickX = eventData.event?.clientX || 200;
+          const clickY = eventData.event?.clientY || 200;
+
+          setPopupState({
+            x: clickX,
+            y: clickY,
+            values: values,
+            labels: labels,
+          });
+          
+          console.log('=== PLOTLY CLICK EVENT END ===');
+        });
+      } else {
+        console.log('GraphDiv does not support .on method:', typeof graphDiv.on);
+      }
+    };
+
+    // Handle close popup
+    const handleClosePopup = () => {
+      setPopupState(null);
+    };
+
     return (
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden mb-6">
         <div className="p-4">
@@ -311,9 +445,20 @@ const SingleHeatmap = React.memo(
               layout={layout}
               config={plotConfig}
               style={plotContainerStyle}
+              onInitialized={handlePlotInitialized}
             />
           </div>
         </div>
+        {popupState && (
+          <MetricsPopup
+            x={popupState.x}
+            y={popupState.y}
+            values={popupState.values}
+            labels={popupState.labels}
+            folderName={folderName}
+            onClose={handleClosePopup}
+          />
+        )}
       </div>
     );
   }

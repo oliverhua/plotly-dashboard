@@ -15,7 +15,7 @@ def create_directories():
     os.makedirs('public/data/Power_On_Latency/testcaseB', exist_ok=True)
 
 # Function to generate random heatmap data
-def generate_heatmap_data(rows=10, cols=10):
+def generate_heatmap_data(rows=10, cols=10, has_additional_metrics=False):
     # Generate random data in range 0-500
     z = np.random.rand(rows, cols) * 500
     
@@ -23,11 +23,41 @@ def generate_heatmap_data(rows=10, cols=10):
     x = [f"X{i}" for i in range(1, cols + 1)]
     y = [f"Y{i}" for i in range(1, rows + 1)]
     
-    return {
+    result = {
         "z": z.tolist(),
         "x": x,
         "y": y
     }
+    
+    # Only generate additional metrics if specified
+    if has_additional_metrics:
+        # Generate additional metrics data
+        # Each metric will have its own matrix of values
+        additional_metrics = {
+            "metric1": {
+                "values": (np.random.rand(rows, cols) * 100).tolist(),  # CPU Usage
+                "label": "CPU Usage"
+            },
+            "metric2": {
+                "values": (np.random.rand(rows, cols) * 100).tolist(),  # Memory Usage
+                "label": "Memory Usage"
+            },
+            "metric3": {
+                "values": (np.random.rand(rows, cols) * 100).tolist(),  # Disk I/O
+                "label": "Disk I/O"
+            },
+            "metric4": {
+                "values": (np.random.rand(rows, cols) * 100).tolist(),  # Network I/O
+                "label": "Network I/O"
+            },
+            "metric5": {
+                "values": (np.random.rand(rows, cols) * 100).tolist(),  # Power Consumption
+                "label": "Power Consumption"
+            }
+        }
+        result["additionalMetrics"] = additional_metrics
+    
+    return result
 
 # Create directory structure
 create_directories()
@@ -39,7 +69,8 @@ print("Generating DVFS_Latency data...")
 for i in range(1, 4):
     data = generate_heatmap_data(
         rows=random.randint(8, 15),
-        cols=random.randint(8, 15)
+        cols=random.randint(8, 15),
+        has_additional_metrics=True  # DVFS_Latency has additional metrics
     )
     filename = f"SSWRP{i}.json"
     filepath = f"public/data/DVFS_Latency/testcaseA/{filename}"
@@ -51,7 +82,8 @@ for i in range(1, 4):
 for i in range(4, 8):
     data = generate_heatmap_data(
         rows=random.randint(8, 15),
-        cols=random.randint(8, 15)
+        cols=random.randint(8, 15),
+        has_additional_metrics=True  # DVFS_Latency has additional metrics
     )
     filename = f"SSWRP{i}.json"
     filepath = f"public/data/DVFS_Latency/testcaseB/{filename}"
@@ -63,7 +95,8 @@ for i in range(4, 8):
 for i in range(8, 10):
     data = generate_heatmap_data(
         rows=random.randint(8, 15),
-        cols=random.randint(8, 15)
+        cols=random.randint(8, 15),
+        has_additional_metrics=True  # DVFS_Latency has additional metrics
     )
     filename = f"SSWRP{i}.json"
     filepath = f"public/data/DVFS_Latency/testcaseC/{filename}"
@@ -78,7 +111,8 @@ print("Generating Power_On_Latency data...")
 for i in range(1, 4):
     data = generate_heatmap_data(
         rows=random.randint(8, 15),
-        cols=random.randint(8, 15)
+        cols=random.randint(8, 15),
+        has_additional_metrics=False  # Power_On_Latency doesn't have additional metrics
     )
     filename = f"SSWRP{i}.json"
     filepath = f"public/data/Power_On_Latency/testcaseA/{filename}"
@@ -90,7 +124,8 @@ for i in range(1, 4):
 for i in range(4, 8):
     data = generate_heatmap_data(
         rows=random.randint(8, 15),
-        cols=random.randint(8, 15)
+        cols=random.randint(8, 15),
+        has_additional_metrics=False  # Power_On_Latency doesn't have additional metrics
     )
     filename = f"SSWRP{i}.json"
     filepath = f"public/data/Power_On_Latency/testcaseB/{filename}"

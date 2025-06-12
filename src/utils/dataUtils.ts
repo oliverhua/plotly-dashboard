@@ -9,6 +9,12 @@ export interface HeatmapData {
   z: number[][];
   x: string[];
   y: string[];
+  additionalMetrics?: {
+    [key: string]: {
+      values: number[][];
+      labels: string[];
+    };
+  };
 }
 
 export interface TestcaseHeatmapData {

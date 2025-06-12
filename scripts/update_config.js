@@ -162,6 +162,41 @@ function updatePlotlyConfig(folderStructure) {
     };
   }
 
+  // 更新 additionalMetrics
+  chartSettings.additionalMetrics = chartSettings.additionalMetrics || {};
+  
+  // 為每個資料夾設置 additionalMetrics
+  allFolders.forEach(folder => {
+    if (!chartSettings.additionalMetrics[folder]) {
+      // 根據資料夾名稱設置不同的配置
+      if (folder === 'DVFS_Latency') {
+        chartSettings.additionalMetrics[folder] = {
+          enabled: true,
+          labels: ["CPU Usage", "Memory Usage", "Disk I/O", "Network I/O", "Power Consumption"],
+          colors: ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"],
+          maxValue: 100
+        };
+      } else {
+        chartSettings.additionalMetrics[folder] = {
+          enabled: false,
+          labels: ["Metric 1", "Metric 2", "Metric 3", "Metric 4", "Metric 5"],
+          colors: ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"],
+          maxValue: 100
+        };
+      }
+    }
+  });
+
+  // 確保有默認值
+  if (!chartSettings.additionalMetrics.default) {
+    chartSettings.additionalMetrics.default = {
+      enabled: false,
+      labels: ["Metric 1", "Metric 2", "Metric 3", "Metric 4", "Metric 5"],
+      colors: ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"],
+      maxValue: 100
+    };
+  }
+
   // 更新 fallbackSettings
   const fallbackSettings = existingConfig.fallbackSettings || {
     removeFileExtension: true,

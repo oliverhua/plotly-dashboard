@@ -43,6 +43,62 @@
         "zmin": 0,
         "zmax": 200
       }
+    },
+    "additionalMetrics": {
+      "DVFS_Latency": {
+        "enabled": true,
+        "labels": [
+          "CPU Usage",
+          "Memory Usage",
+          "Disk I/O",
+          "Network I/O",
+          "Power Consumption"
+        ],
+        "colors": [
+          "#1f77b4",
+          "#ff7f0e",
+          "#2ca02c",
+          "#d62728",
+          "#9467bd"
+        ],
+        "maxValue": 100
+      },
+      "default": {
+        "enabled": false,
+        "labels": [
+          "Metric 1",
+          "Metric 2",
+          "Metric 3",
+          "Metric 4",
+          "Metric 5"
+        ],
+        "colors": [
+          "#1f77b4",
+          "#ff7f0e",
+          "#2ca02c",
+          "#d62728",
+          "#9467bd"
+        ],
+        "maxValue": 100
+      },
+      "Power_On_Latency": {
+        "enabled": false,
+        "labels": [
+          "Metric 1",
+          "Metric 2",
+          "Metric 3",
+          "Metric 4",
+          "Metric 5"
+        ],
+        "colors": [
+          "#1f77b4",
+          "#ff7f0e",
+          "#2ca02c",
+          "#d62728",
+          "#9467bd"
+        ],
+        "maxValue": 100
+      }
     }
   },
   "fallbackSettings": {

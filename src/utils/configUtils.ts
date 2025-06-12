@@ -25,6 +25,20 @@ export interface PlotlyConfig {
         zmax: number;
       };
     };
+    additionalMetrics: {
+      [folderName: string]: {
+        enabled: boolean;
+        labels: Record<string, string>;
+        colors: Record<string, string>;
+        maxValue: number;
+      };
+      default: {
+        enabled: boolean;
+        labels: Record<string, string>;
+        colors: Record<string, string>;
+        maxValue: number;
+      };
+    };
   };
   fallbackSettings: {
     removeFileExtension: boolean;
@@ -100,6 +114,17 @@ export const getZAxisRange = (
   return (
     config.chartSettings.zAxisRanges[folderName] ||
     config.chartSettings.zAxisRanges.default
+  );
+};
+
+/**
+ * Get additional metrics configuration for a folder
+ */
+export const getAdditionalMetricsConfig = (folderName: string) => {
+  const config = configData as PlotlyConfig;
+  return (
+    config.chartSettings.additionalMetrics[folderName] ||
+    config.chartSettings.additionalMetrics.default
   );
 };
 
