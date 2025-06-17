@@ -267,8 +267,8 @@ const SingleHeatmap = React.memo(
       // Process the data to set diagonal elements to null (where x = y)
       const processedZ = data.z.map((row, rowIndex) =>
         row.map((value, colIndex) => {
-          // If this is a diagonal element (x = y), return null
-          if (rowIndex === colIndex) {
+          // If this is a diagonal element (x = y) or value is undefined/null, return null
+          if (rowIndex === colIndex || value === undefined || value === null) {
             return null;
           }
           return value;
@@ -278,8 +278,8 @@ const SingleHeatmap = React.memo(
       // Create text data for displaying values on each cell
       const textData = data.z.map((row, rowIndex) =>
         row.map((value, colIndex) => {
-          // If this is a diagonal element (x = y), show empty string
-          if (rowIndex === colIndex) {
+          // If this is a diagonal element (x = y) or value is undefined/null, show empty string
+          if (rowIndex === colIndex || value === undefined || value === null) {
             return '';
           }
           // Round the value to 1 decimal place for cleaner display
