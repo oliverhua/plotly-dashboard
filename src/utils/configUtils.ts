@@ -65,7 +65,7 @@ export const getFolderDisplayName = (folderName: string): string => {
   const config = getPlotlyConfig();
   return (
     config.displayNames.folders[folderName] ||
-    formatFallbackName(folderName, config.fallbackSettings)
+    formatDisplayName(folderName, config.fallbackSettings)
   );
 };
 
@@ -76,7 +76,7 @@ export const getTestcaseDisplayName = (testcaseName: string): string => {
   const config = getPlotlyConfig();
   return (
     config.displayNames.testcases[testcaseName] ||
-    formatFallbackName(testcaseName, config.fallbackSettings)
+    formatDisplayName(testcaseName, config.fallbackSettings)
   );
 };
 
@@ -87,7 +87,7 @@ export const getFileDisplayName = (fileName: string): string => {
   const config = getPlotlyConfig();
   return (
     config.displayNames.files[fileName] ||
-    formatFallbackName(fileName, config.fallbackSettings)
+    formatDisplayName(fileName, config.fallbackSettings)
   );
 };
 
@@ -143,9 +143,9 @@ export const getAdditionalMetricsConfig = (folderName: string) => {
 /**
  * Format name using fallback settings
  */
-const formatFallbackName = (
+export const formatDisplayName = (
   name: string,
-  fallbackSettings: PlotlyConfig['fallbackSettings']
+  fallbackSettings: PlotlyConfig['fallbackSettings'] = getPlotlyConfig().fallbackSettings
 ): string => {
   let formatted = name;
 

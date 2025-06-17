@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import Plot from 'react-plotly.js';
 import type { Config, Layout } from 'plotly.js';
-import { getBarChartAxisLabels } from '../utils/configUtils';
+import { getBarChartAxisLabels, getAdditionalMetricsConfig, formatDisplayName } from '../utils/configUtils';
 
 interface BarChartTask {
   task: string;
@@ -89,6 +89,11 @@ const BarChart: React.FC<BarChartProps> = ({
     );
   }
 
+  // Get metrics configuration from plotly_config.json
+  const metricsConfig = getAdditionalMetricsConfig(selectedFolder);
+  const metricLabels = metricsConfig.labels;
+  const metricColors = metricsConfig.colors;
+
   // Prepare stacked bar chart data
   const plotData = useMemo(() => {
     if (!data || !data.tasks) return [];
@@ -98,13 +103,8 @@ const BarChart: React.FC<BarChartProps> = ({
     
     if (filteredTasks.length === 0) return [];
 
-    // 獲取所有指標的標籤（假設所有任務都有相同的指標）
-    const firstTask = filteredTasks[0];
-    const metricKeys = Object.keys(firstTask.metrics);
-    const metricLabels = metricKeys.map(key => firstTask.metrics[key].label);
-    
-    // 定義顏色
-    const colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'];
+    // 獲取所有指標的標籤（使用 plotly_config.json 中的設定）
+    const metricKeys = Object.keys(filteredTasks[0].metrics);
     
     const traces: any[] = [];
     
@@ -114,12 +114,12 @@ const BarChart: React.FC<BarChartProps> = ({
       const label = metricLabels[index] || `Metric ${index + 1}`;
       
       traces.push({
-        x: filteredTasks.map(task => task.task),
+        x: filteredTasks.map(task => formatDisplayName(task.task)),
         y: values,
         name: label,
         type: 'bar',
         marker: {
-          color: colors[index % colors.length],
+          color: metricColors[index % metricColors.length],
           opacity: 0.8,
         },
         text: values.map(val => val.toFixed(1)),
@@ -137,7 +137,7 @@ const BarChart: React.FC<BarChartProps> = ({
     });
 
     return traces;
-  }, [data, selectedTestcase]);
+  }, [data, selectedTestcase, metricLabels, metricColors]);
 
   // Layout configuration
   const layout: Partial<Layout> = useMemo(() => {
@@ -146,7 +146,7 @@ const BarChart: React.FC<BarChartProps> = ({
     
     return {
       title: {
-        text: `Test Items Report - ${selectedFolder} / ${selectedTestcase}`,
+        text: `Test Items Report - ${formatDisplayName(selectedFolder)} / ${formatDisplayName(selectedTestcase)}`,
         font: {
           family: 'Inter, system-ui, sans-serif',
           size: 18,
@@ -229,10 +229,10 @@ const BarChart: React.FC<BarChartProps> = ({
           Test Items Report
         </h3>
         <p className="text-sm text-gray-600">
-          Metrics report for {selectedTestcase} in {selectedFolder}
+          Metrics report for {formatDisplayName(selectedTestcase)} in {formatDisplayName(selectedFolder)}
         </p>
         <p className="text-xs text-gray-500 mt-1">
-          Each bar represents one heatmap with stacked average values of 5 metrics
+          Each bar represents one heatmap with stacked average values of {metricLabels.length} metrics
         </p>
       </div>
 
@@ -255,15 +255,15 @@ const BarChart: React.FC<BarChartProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {data && data.tasks.filter(task => task.resource === selectedTestcase).slice(0, 3).map((task) => (
             <div key={task.task} className="bg-white p-3 rounded border">
-              <h5 className="font-medium text-gray-700 mb-2">{task.task}</h5>
+              <h5 className="font-medium text-gray-700 mb-2">{formatDisplayName(task.task)}</h5>
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Z-Value Avg:</span>
                   <span className="font-medium">{task.duration.toFixed(1)}</span>
                 </div>
-                {Object.entries(task.metrics).map(([key, metric]) => (
+                {Object.entries(task.metrics).map(([key, metric], index) => (
                   <div key={key} className="flex justify-between">
-                    <span className="text-gray-600">{metric.label}:</span>
+                    <span className="text-gray-600">{metricLabels[index] || metric.label}:</span>
                     <span className="font-medium">{metric.value.toFixed(1)}</span>
                   </div>
                 ))}
@@ -274,13 +274,13 @@ const BarChart: React.FC<BarChartProps> = ({
         
         {/* Overall Statistics */}
         <div className="mt-4 pt-4 border-t border-gray-200">
-          <h5 className="font-medium text-gray-700 mb-2">Overall Statistics for {selectedTestcase}</h5>
+          <h5 className="font-medium text-gray-700 mb-2">Overall Statistics for {formatDisplayName(selectedTestcase)}</h5>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
             {data && data.tasks.length > 0 && (() => {
               const filteredTasks = data.tasks.filter(task => task.resource === selectedTestcase);
               if (filteredTasks.length === 0) return null;
               
-              return Object.entries(filteredTasks[0].metrics).map(([key, metric]) => {
+              return Object.entries(filteredTasks[0].metrics).map(([key, metric], index) => {
                 const allValues = filteredTasks.map(task => task.metrics[key]?.value || 0);
                 const avg = allValues.reduce((sum, val) => sum + val, 0) / allValues.length;
                 const max = Math.max(...allValues);
@@ -288,7 +288,7 @@ const BarChart: React.FC<BarChartProps> = ({
                 
                 return (
                   <div key={key} className="bg-white p-2 rounded border">
-                    <div className="font-medium text-gray-700 text-xs mb-1">{metric.label}</div>
+                    <div className="font-medium text-gray-700 text-xs mb-1">{metricLabels[index] || metric.label}</div>
                     <div className="space-y-1">
                       <div className="flex justify-between text-xs">
                         <span className="text-gray-500">Avg:</span>
